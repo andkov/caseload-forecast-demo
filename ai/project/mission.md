@@ -1,32 +1,38 @@
-# Project Mission (Template)
+# Project Mission
 
-Provide a clear, concise articulation of the project's purpose, target users, and intended analytical impact.
+This repository provides a **cloud-migration learning sandbox** for monthly caseload forecasting. It uses publicly available Alberta Income Support data to create a complete, self-contained forecasting workflow that SDA analysts can run on-premises, then migrate to Azure ML infrastructure with guidance from Microsoft partners (Sherry Pewar, Dony Alex).
+
+The repo prioritizes **simplicity over realism**: model complexity is deliberately constrained to three tiers (naive baseline, ARIMA, augmented ARIMA) to focus learning on cloud orchestration, not statistical nuance. Once the Azure pipeline is stable, it will be re-grafted onto real, operationally complex SDA data.
 
 ## Objectives
 
-- Establish a reusable scaffold for data analysis workflows.
-- Demonstrate AI-assisted context, persona, and memory integration.
-- Support rapid onboarding with minimal friction.
-- Maintain separation between portable logic and project-specific storage.
+- **Establish end-to-end on-prem pipeline**: Ferry → Ellis → EDA → Train → Forecast → Static HTML reports (monthly refresh cadence)
+- **Demonstrate Azure ML migration path**: Understand compute instances, model registry, MLflow, endpoint serving, and orchestration for SDA use cases
+- **Enable SDA analyst fluency**: Andriy Koval (solid R/stats background, new to cloud) gains hands-on experience with Azure ML concepts and terminology
+- **Inform cloud adoption strategy**: Clarify where cloud compute is indispensable (e.g., large-scale estimation) vs. where on-prem suffices
+- **Prototype report serving & security**: Explore delivery mechanisms (static HTML → SharePoint, Azure Static Web Apps, Power BI) with AAD-based access control
 
 ## Success Metrics
 
-- Time-to-first-successful analysis < 30 minutes.
-- Persona activation yields relevant guidance without manual edits.
-- Memory system captures decisions within normal workflow (<= 3 commands).
-- Context refresh operations complete < 2 seconds for core files.
+- **Pipeline completeness**: Ferry, Ellis, EDA, Train, Forecast scripts all execute without manual intervention
+- **Reproducibility**: Re-running the pipeline with same data produces identical forecasts (deterministic seeds, versioned dependencies)
+- **Documentation quality**: New SDA analyst can clone repo and produce first forecast in < 2 hours with README alone
+- **Azure readiness**: Project structure and code patterns align with Azure ML pipeline requirements (even if not yet deployed)
+- **Report delivery**: Static HTML renders successfully, displays 24-month horizon forecasts with model performance diagnostics
 
 ## Non-Goals
 
-- Domain-specific modeling guidance.
-- Heavy dependency management beyond base R/Python tooling.
-- Automated cloud deployment.
+- **Model sophistication**: This is not a production forecasting system. Model accuracy is secondary to workflow clarity.
+- **Real-time inference**: Monthly batch forecasting only; no streaming data or live endpoints (yet).
+- **Automated deployment**: Azure migration is Phase 2. Phase 1 establishes local workflow and confirms Azure requirements.
+- **Multi-program disaggregation**: Initial scope is total caseload only. Program-level forecasts deferred to re-graft phase.
 
 ## Stakeholders
 
-- Data analysts: need reproducible templates.
-- Research engineers: need portable AI scaffolding.
-- Project managers: need visibility into mission/method/glossary.
+- **Andriy Koval (SDA Analyst)**: Primary user; builds pipeline, learns Azure ML, documents learnings
+- **SDA Analytics Team**: Secondary audience for static HTML reports; validates workflow patterns for reusability
+- **Sherry Pewar (Analytics Capability Centre)**: Infrastructure and product ownership guidance for Azure ML setup
+- **Dony Alex (Director, Data Centre of Excellence)**: Strategic advisor on cloud adoption patterns and SDA organizational needs
+- **Jeremy Crossman (Microsoft)**:  Senior Cloud & AI Specialist
+- **Poonam Upadhyay (Microsoft)**:  Cloud & AI Specialist
 
----
-*Populate with project-specific mission statements before production use.*
