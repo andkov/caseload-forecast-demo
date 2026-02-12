@@ -1,0 +1,261 @@
+---
+title: "Vehicle Performance Analysis: Exploratory Data Analysis"
+subtitle: "EDA 1 - Motor Trend Car Road Tests Dataset"
+author: "Analysis Team"
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-location: right
+    code-fold: show
+    theme: yeti
+    highlight-style: breeze
+    code-line-numbers: true
+    self-contained: true
+    embed-resources: true
+    keep-md: false
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# Mission
+
+This document demonstrates **data genealogy** and **graph families** within analytical workflows using the Motor Trend Car Road Tests dataset. We track data transformations through a clear lineage:
+
+-   **ds0 (Original)**: Raw mtcars data with 32 individual vehicle observations
+-   **g2_data (Derived)**: Cylinder-based performance summaries created in g2-data-prep chunk
+-   **Graph Family g2x**: Multiple visualizations (g2, g21, g22...) that all build from the same g2_data ancestor
+-   **Analytical Focus**: How engine cylinder count affects different aspects of vehicle performance
+
+**Key Analytical Questions:**
+ - How does cylinder count relate to horsepower? (g2 visualization) 
+ - How does cylinder count relate to fuel efficiency? (g21 visualization) 
+ - What other performance patterns emerge from the same cylinder-based data preparation? 
+ - How does the graph family pattern help isolate data preparation while enabling multiple analytical perspectives?
+
+Following the **template workflow**, we develop analytical insights iteratively in the companion `.R` script before publishing them here for broader consumption.
+
+# **Definition of Terms**
+
+```{r}
+#| code-summary: Reconciles working directory between execution modes
+#| echo: false
+#| results: hide
+#| message: false 
+#| warning: false
+cat("Working directory: ", getwd())
+library(knitr)
+opts_knit$set(root.dir='../../') # keep this chunk isolated
+```
+
+```{r}
+#| label: set_options
+#| code-summary: report-wide formatting options
+#| echo: false
+#| results: hide
+#| message: false 
+cat("Working directory: ", getwd()) # turn on to test the location
+report_render_start_time <- Sys.time()
+# set options shared by all chunks
+opts_chunk$set(
+  results      = 'show',
+  message      = FALSE,
+  warning      = FALSE,
+  comment      = NA,
+  tidy         = FALSE,
+  # dpi        = 400, # dots per inch,
+  out.width  = "960px", # pixels, this affects only the markdown, not the underlying png file.  The height will be scaled appropriately.
+  fig.width    = 10, # inches - larger for publication trends
+  fig.height   = 6, # inches - good for time series
+  fig.path     = 'figure-png-iso/' # where figures are stored
+  
+)
+echo_chunks    <- FALSE #Toggle for debugging.
+message_chunks <- FALSE #Toggle for debugging.
+options(width=100) # number of characters to display in the output (dflt = 80)
+ggplot2::theme_set(ggplot2::theme_minimal()) # clean theme for publications
+read_chunk("analysis/eda-1/eda-1.R") #This allows knitr to call chunks from R script
+```
+
+# Environment
+
+> Reviews the components of the working environment of the report. Non-technical readers are welcomed to skip. Come back if you need to understand the origins of custom functions, scripts, or data objects.
+
+```{r}
+#| label: load-packages
+#| code-summary: Packages used in the current report
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: load-sources
+#| code-summary: Collection of custom functions used in current repository
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+
+```
+
+```{r}
+#| label: declare-globals
+#| code-summary: Values used throughout the report.
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: declare-functions
+#| code-summary: Custom functions defined for use in this report.
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+# Data
+
+This report demonstrates **data genealogy** and **graph families** using the Motor Trend Car Road Tests dataset:
+
+-   **ds0**: Original `mtcars` data - 32 automobile performance measurements from 1973-74 Motor Trend magazine
+-   **g2_data**: Derived cylinder summary created in `g2-data-prep` chunk - aggregated performance metrics by engine cylinder count (4, 6, 8 cylinders)
+
+**Graph Family Pattern:** 
+- ds0 → g2-data-prep → g2_data → **multiple visualizations** (g2, g21, g22...) 
+- **Key insight**: All family members share the same data preparation but explore different aspects of monothematic idea (e.g  cylinder-based performance)
+
+```{r }
+#| label: load-data
+#| code-summary: Load original data (ds0) - g2_data will be created in g2-data-prep chunk
+#| warning: false
+#| code-fold: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-0
+#| code-summary: Data overview - ds0 structure
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-1
+#| code-summary: Original dataset structure (ds0)
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-2
+#| code-summary: Key variables summary from ds0
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+# Analysis
+
+## Data Genealogy Visualization
+
+### Individual Vehicle Analysis (ds0)
+
+This visualization uses our **original dataset (ds0)** to explore relationships between individual vehicle characteristics:
+
+```{r}
+#| label: g1
+#| code-summary: Weight vs MPG scatter plot using original data (ds0)
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Scatter plot of vehicle weight vs fuel efficiency - original data (ds0) with individual observations"
+```
+
+### Data Preparation for Aggregated Analysis
+
+First, we prepare the data for our cylinder analysis:
+
+```{r}
+#| label: g2-data-prep
+#| code-summary: Prepare g2_data - cylinder-based performance summary
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+### Aggregated Performance Analysis (g2_data)
+
+This visualization uses our **derived dataset (g2_data)** created above to show summarized performance metrics:
+
+```{r}
+#| label: g2
+#| code-summary: Average horsepower by cylinder count using g2_data
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Bar chart showing average horsepower by engine cylinder count - g2_data aggregation"
+```
+
+## Graph Family g2x: Different Perspectives on Cylinder Performance
+
+### Alternative View: Fuel Efficiency Focus (g21)
+
+This visualization uses the **same g2_data** as the previous chart, but focuses on fuel efficiency instead of horsepower. This demonstrates the graph family concept - same data preparation, different analytical perspectives:
+
+```{r}
+#| label: g21
+#| code-summary: Average fuel efficiency by cylinder count using g2_data
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Fuel efficiency by cylinder count - same g2_data ancestor, different performance metric focus"
+print(g21_cylinder_mpg)  # Print for HTML rendering in Quarto
+```
+
+<!-- As we develop more graphs in the R script, we'll add corresponding chunks here -->
+
+````{=html}
+<!-- Example pattern:
+### Language Dynamics
+
+```{r}
+#| label: g2
+#| code-summary: Ukrainian vs Russian language publication trends
+#| code-fold: false
+#| eval: true
+#| cache: true
+#| fig-cap: "Publishing trends by language: Ukrainian and Russian books over time"
+```
+
+### Regional Patterns
+
+```{r}
+#| label: g3
+#| code-summary: Regional distribution of publishing activity
+#| code-fold: false
+#| eval: true
+#| cache: true
+#| fig-cap: "Publishing activity by Ukrainian oblast/territory"
+```
+-->
+````
+
+# Session Info
+
+```{r}
+#| label: session-info
+#| code-summary: R session information for reproducibility
+#| echo: false
+#| code-fold: true
+cat("Report completed at:", as.character(Sys.time()), "\n")
+cat("Total runtime:", round(difftime(Sys.time(), report_render_start_time, units = "mins"), 2), "minutes\n")
+sessionInfo()
+```
