@@ -4,7 +4,6 @@ Human decisions and reasoning.
 
 ---
 
+# 2026-02-12
 
----
-
- ** 2025-11-11 **: Removed ai_memory_check() function - unnecessary wrapper that just called memory_status(), quick_intent_scan(), and show_memory_help() in sequence. Users should call these directly. Renamed wrapper script from run-ai-memory-check.R to show-memory-status.R for clarity. Result: 312 lines reduced to 293 lines (6% further reduction). Total cleanup: 377 -> 293 lines (22% reduction overall). 
+We need to design the ferry lane that would implement the import from four different sources: csv, url, sqlite and sql server. Before we compose this ferry script, let's create the sqlite and sqrver sources. Create an R script (./manipulation/create-data-assets.R) that would create 1) a sqlite db in data-public/raw/ with identical contents as our csv data source and 2) table _TEST.open_data_is_sep_2025 on research_project_cache via ODBC, like you see in the example of ferry
