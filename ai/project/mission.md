@@ -16,7 +16,6 @@ The repo prioritizes **simplicity over realism**: model complexity is deliberate
 
 - **Pipeline completeness**: Ferry, Ellis, EDA, Train, Forecast scripts all execute without manual intervention
 - **Reproducibility**: Re-running the pipeline with same data produces identical forecasts (deterministic seeds, versioned dependencies)
-- **Documentation quality**: New SDA analyst can clone repo and produce first forecast in < 2 hours with README alone
 - **Azure readiness**: Project structure and code patterns align with Azure ML pipeline requirements (even if not yet deployed)
 - **Report delivery**: Static HTML renders successfully, displays 24-month horizon forecasts with model performance diagnostics
 
