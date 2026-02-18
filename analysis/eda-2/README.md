@@ -19,9 +19,11 @@ This exploratory data analysis focuses on **time series patterns** in Alberta In
 - ds1_* = after tweak-data-1 transformations (date formatting)
 
 **Key Outputs:**
-- 6 time series visualizations exploring different analytical perspectives
-- Growth rate analysis identifying volatility patterns
-- Period-based summary statistics for forecasting context
+- 12 visualizations exploring different analytical perspectives
+- Stationarity tests (ADF, KPSS) informing differencing requirements
+- ACF/PACF plots for ARIMA order selection
+- Seasonal decomposition guiding model complexity decisions
+- Train/test split visualization showing 24-month backtest window
 
 ---
 
@@ -80,7 +82,7 @@ Or use the VS Code task:
 
 ### g3: Client Type Stacked Area Chart
 - **Purpose**: Show composition evolution since 2012 Alberta Works reform
-- **Insights**: Barrier-Free Employment forms stable base, ETW: Available most volatile
+- **Insights**: Barriers to Full Employment forms stable base, ETW: Available most volatile
 - **Format**: Stacked area with 4 client categories
 
 ### g4: Client Type Faceted Time Series
@@ -97,6 +99,36 @@ Or use the VS Code task:
 - **Purpose**: Quantify volatility and identify structural break periods
 - **Insights**: ±40-50% YoY swings during crises, baseline volatility ±5-10%
 - **Format**: Line chart with color-coded increase/decrease points
+
+### g7: Train/Test Split Visualization
+- **Purpose**: Show temporal boundaries for model training vs backtesting
+- **Insights**: Training through Sep 2023, test = last 24 months (Oct 2023 - Sep 2025)
+- **Format**: Line chart with vertical split demarcation
+
+### g8: Stationarity Tests (ADF & KPSS)
+- **Purpose**: Determine differencing requirement for ARIMA models
+- **Insights**: Test results guide d parameter selection (likely d=1 based on trends)
+- **Format**: Text output table with test statistics and interpretations
+
+### g9: Autocorrelation Function (ACF)
+- **Purpose**: Identify MA (moving average) order for ARIMA modeling
+- **Insights**: Lag structure informs q parameter in ARIMA(p,d,q)
+- **Format**: Correlogram with significance bounds
+
+### g10: Partial Autocorrelation Function (PACF)
+- **Purpose**: Identify AR (autoregressive) order for ARIMA modeling
+- **Insights**: Lag structure informs p parameter in ARIMA(p,d,q)
+- **Format**: Partial correlogram with significance bounds
+
+### g11: Seasonal Decomposition (STL)
+- **Purpose**: Separate trend, seasonal, and irregular components
+- **Insights**: Modest seasonality suggests SARIMA optional; large remainder = wide intervals needed
+- **Format**: 4-panel faceted time series (observed, trend, seasonal, remainder)
+
+### g12: Log Transformation Comparison
+- **Purpose**: Assess variance stabilization benefits of log transformation
+- **Insights**: Log scale reduces heteroscedasticity; use for all ARIMA models per method.md
+- **Format**: 2-panel comparison (original vs log scale)
 
 ---
 
@@ -126,17 +158,23 @@ All visualizations use ds1_* datasets
 
 ## Key Analytical Insights
 
-### For Forecasting Model Development
+### For Forecasting Model Development (train-1/model-1.R)
 
-1. **High economic sensitivity** - unemployment rate, oil prices, wage growth should be included as predictors
+1. **Train/test split confirmed** - 222 months training (Apr 2005 - Sep 2023), 24 months test (Oct 2023 - Sep 2025)
 
-2. **Client type heterogeneity** - model each category separately rather than aggregating
+2. **Log transformation required** - Variance increases with caseload level; log scale stabilizes volatility for ARIMA
 
-3. **Structural breaks** - 2012 policy reform, COVID-19 federal programs require dummy variables or regime-specific models
+3. **Differencing likely needed** - Stationarity tests indicate d=1 in ARIMA(p,d,q) will be necessary
 
-4. **Modest seasonality** - include seasonal adjustment but not dominant signal
+4. **Seasonal component modest** - STL decomposition shows seasonality present but small relative to trend/irregular; SARIMA optional
 
-5. **High baseline volatility** - use wide prediction intervals, consider ensemble approaches
+5. **Wide prediction intervals essential** - Large irregular component in decomposition reflects economic shocks and structural breaks
+
+6. **ACF/PACF patterns** - Inform initial ARIMA order selection; validate against `auto.arima()` recommendations
+
+7. **Client type heterogeneity** - Model each category separately rather than aggregating (distinct volatility patterns persist)
+
+8. **Structural breaks evident** - 2008 crisis, 2014 oil collapse, COVID-19 create regime changes requiring careful model specification
 
 ### Historical Context
 
@@ -197,10 +235,31 @@ install.packages("httpgd", repos = "https://cran.rstudio.com", type = "win.binar
 
 ## Next Steps
 
-- **EDA-3**: Analyze family composition and regional breakdowns
-- **EDA-4**: External economic predictors (unemployment, oil prices, demographics)
-- **Model Development**: ARIMA baseline → multivariate models → Azure ML AutoML
-- **Forecast Validation**: Backtesting framework using historical test set
+**Immediate: train-1/model-1.R Implementation**
+
+This EDA provides the diagnostic foundation for implementing method.md Section 4 (Model Estimation):
+
+1. **Model tiers to implement**:
+   - Tier 1: Naive baseline (benchmark)
+   - Tier 2: ARIMA on log-transformed series (auto-selected orders)
+   - Tier 3: ARIMA + static predictor (gender composition)
+   - Tier 4: ARIMA + time-varying predictor (structure only)
+
+2. **Key decisions informed by this EDA**:
+   - Use log transformation (g12 confirms variance stabilization)
+   - Expect d=1 differencing (g8 stationarity tests)
+   - Reference ACF/PACF patterns (g9, g10) when interpreting `auto.arima()` results
+   - Implement 24-month backtest (g7 split visualization)
+   - Wide prediction intervals (g11 decomposition shows large irregular component)
+
+3. **Model storage**: Save fitted objects as `.rds` in `./data-private/derived/models/`
+
+4. **Performance metrics**: RMSE, MAE, MAPE on 24-month test period
+
+**Longer-Term**:
+- **train-2**: Client type-specific models (separate ARIMA per category)
+- **train-3**: External economic predictors (unemployment, oil prices)
+- **Azure ML Migration**: Refactor for cloud execution with MLflow tracking
 
 ---
 
