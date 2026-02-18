@@ -260,6 +260,23 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "Run Ellis Lane 2",
+			"detail": "Execute ellis lane 2 to transform Income Support data into 6 analysis-ready tables",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"manipulation/2-ellis.R"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
 			"label": "Run Pipeline (flow.R)",
 			"detail": "Execute complete reproducible pipeline orchestrating all data and analysis scripts",
 			"type": "shell",
