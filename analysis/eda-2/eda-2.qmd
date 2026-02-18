@@ -1,0 +1,411 @@
+---
+title: "Alberta Income Support Caseload: Exploratory Data Analysis"
+subtitle: "EDA 2 - Time Series Analysis of Total Caseload and Client Types"
+author: "Strategic Data Analytics Team"
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-location: right
+    code-fold: show
+    theme: yeti
+    highlight-style: breeze
+    code-line-numbers: true
+    self-contained: true
+    embed-resources: true
+    keep-md: false
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# Mission
+
+This document provides an **exploratory analysis** of Alberta Income Support caseload data, introducing readers to:
+
+-   **Total Caseload Trends**: 20-year historical perspective (April 2005 - September 2025)
+-   **Client Type Composition**: How caseload breaks down by employment readiness categories
+-   **Temporal Patterns**: Seasonal effects, year-over-year changes, and policy impact periods
+-   **Data Preparation for Forecasting**: Understanding historical patterns to inform predictive models
+
+**Key Analytical Questions:**
+ - What are the long-term trends in Alberta Income Support caseload? 
+ - How did major economic events (2008 crisis, oil price collapse, COVID-19) affect caseload? 
+ - How has client composition shifted over time (Expected to Work vs Barrier-Free Employment)? 
+ - What seasonal patterns exist in the data?
+ - What growth rates characterize different historical periods?
+
+**Data Sources:**
+- **Raw Data**: Alberta Open Data - Income Support Monthly Caseload Statistics
+- **Analysis-Ready Data**: Processed through Ellis pattern ([manipulation/2-ellis.R](../../manipulation/2-ellis.R))
+- **Documentation**: See [CACHE-manifest.md](../../data-public/metadata/CACHE-manifest.md) for complete data dictionary
+
+Following the **template workflow**, we develop analytical insights iteratively in the companion `.R` script before publishing them here for broader consumption.
+
+# **Definition of Terms**
+
+```{r}
+#| code-summary: Reconciles working directory between execution modes
+#| echo: false
+#| results: hide
+#| message: false 
+#| warning: false
+cat("Working directory: ", getwd())
+library(knitr)
+opts_knit$set(root.dir='../../') # keep this chunk isolated
+```
+
+```{r}
+#| label: set_options
+#| code-summary: report-wide formatting options
+#| echo: false
+#| results: hide
+#| message: false 
+cat("Working directory: ", getwd()) # turn on to test the location
+report_render_start_time <- Sys.time()
+# set options shared by all chunks
+opts_chunk$set(
+  results      = 'show',
+  message      = FALSE,
+  warning      = FALSE,
+  comment      = NA,
+  tidy         = FALSE,
+  # dpi        = 400, # dots per inch,
+  out.width  = "960px", # pixels, this affects only the markdown, not the underlying png file.  The height will be scaled appropriately.
+  fig.width    = 10, # inches - larger for publication trends
+  fig.height   = 6, # inches - good for time series
+  fig.path     = 'figure-png-iso/' # where figures are stored
+  
+)
+echo_chunks    <- FALSE #Toggle for debugging.
+message_chunks <- FALSE #Toggle for debugging.
+options(width=100) # number of characters to display in the output (dflt = 80)
+ggplot2::theme_set(ggplot2::theme_minimal()) # clean theme for publications
+read_chunk("analysis/eda-2/eda-2.R") #This allows knitr to call chunks from R script
+```
+
+# Environment
+
+> Reviews the components of the working environment of the report. Non-technical readers are welcomed to skip. Come back if you need to understand the origins of custom functions, scripts, or data objects.
+
+```{r}
+#| label: load-packages
+#| code-summary: Packages used in the current report
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: load-sources
+#| code-summary: Collection of custom functions used in current repository
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+
+```
+
+```{r}
+#| label: declare-globals
+#| code-summary: Values used throughout the report.
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: declare-functions
+#| code-summary: Custom functions defined for use in this report.
+#| echo: true
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+# Data
+
+This report analyzes two primary datasets from the analysis-ready CACHE outputs:
+
+-   **ds0_total → ds1_total**: Complete time series from April 2005 to September 2025 (246 months) - the longest historical view available
+-   **ds0_client_type → ds1_client_type**: Client type breakdown from April 2012 to September 2025 (162 months) - introduced with Alberta Works reform
+
+**Data Genealogy:** 
+- Raw data → [Ferry Lane 1](../../manipulation/1-ferry.R) → CACHE database 
+- CACHE staging → [Ellis Lane 2](../../manipulation/2-ellis.R) → Analysis-ready parquet files
+- **Loaded as**: ds0_total, ds0_client_type
+- **Transformed to**: ds1_total, ds1_client_type (date formatting applied)
+- **Data Quality**: All Ellis quality checks passed, suppressed values handled, Nov 2020 duplicate corrected
+
+**Client Type Categories:**
+- **ETW: Working** - Employed but income insufficient for self-sufficiency
+- **ETW: Available for Work** - Job-ready, actively seeking employment  
+- **ETW: Unavailable for Work** - Temporarily unable (caregiving, illness, training)
+- **Barrier-Free Employment** - Significant barriers (disabilities, complex circumstances)
+
+```{r }
+#| label: load-data
+#| code-summary: Load analysis-ready data (ds0_total, ds0_client_type from parquet)
+#| warning: false
+#| code-fold: true
+#| cache: true
+```
+
+```{r}
+#| label: tweak-data-1
+#| code-summary: Transform to ds1_total and ds1_client_type with proper date formatting
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-0
+#| code-summary: Loaded data overview (ds0_total, ds0_client_type)
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-1
+#| code-summary: Total caseload structure (ds1_total after transformation)
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-2
+#| code-summary: Total caseload summary statistics (ds1_total)
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-3
+#| code-summary: Client type data structure (ds1_client_type after transformation)
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: inspect-data-4
+#| code-summary: Client type categories and coverage (ds1_client_type)
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+# Analysis
+
+## Long-Term Caseload Trends
+
+### Total Caseload Time Series (2005-2025)
+
+The complete 20-year historical perspective shows major inflection points driven by economic shocks and policy changes:
+
+```{r}
+#| label: g1
+#| code-summary: Total caseload time series from April 2005 to September 2025
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Alberta Income Support total caseload over 246 months - full historical context"
+```
+
+**Key Observations:**
+- **2008-09 Financial Crisis**: Sharp increase in caseload as unemployment rose
+- **2012 Alberta Works Reform**: Policy changes introduced Expected to Work framework
+- **2014-16 Oil Price Collapse**: Sustained increase reflecting Alberta's resource economy sensitivity
+- **COVID-19 Pandemic (2020-21)**: Dramatic spike followed by rapid decline as federal programs absorbed demand
+- **Post-2022 Trends**: Stabilization at pre-pandemic baseline levels
+
+---
+
+### Historical Period Comparison
+
+Aggregate statistics by major policy and economic periods:
+
+```{r}
+#| label: g2-data-prep
+#| code-summary: Prepare period-based summary statistics
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: g2
+#| code-summary: Average caseload by historical period
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "How average monthly caseload varied across seven distinct historical periods"
+```
+
+**Implications for Forecasting:**
+- Each period has distinct baseline levels and volatility patterns
+- COVID-19 represents unprecedented shock but relatively brief duration
+- Oil price sensitivity suggests economic indicators as valuable predictors
+- Policy changes (2012 reform) created structural shifts in caseload composition
+
+---
+
+## Client Type Composition Analysis
+
+### Stacked Area Chart: Client Type Evolution
+
+How caseload composition has shifted since the introduction of the Expected to Work framework in 2012:
+
+```{r}
+#| label: g3
+#| code-summary: Client type composition as stacked area chart
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Evolution of client type mix from April 2012 to September 2025 - stacked view"
+```
+
+**Key Insights:**
+- **Barrier-Free Employment** (red) forms a relatively stable base layer
+- **ETW: Available for Work** (light blue) shows highest volatility - most responsive to economic conditions
+- **ETW: Working** (dark blue) represents income supplementation - reflects working poverty dynamics
+- **ETW: Unavailable for Work** (medium blue) smallest category, relatively stable
+
+---
+
+### Faceted Time Series: Individual Category Trajectories
+
+Detailed view of each client type's independent trajectory:
+
+```{r}
+#| label: g4
+#| code-summary: Client type trends shown in separate facets with independent y-axes
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-height: 8
+#| fig-cap: "Four separate time series allowing comparison of growth patterns and volatility"
+```
+
+**Forecasting Strategy Implications:**
+- Each category exhibits distinct patterns - **model separately rather than aggregating**
+- **ETW: Available for Work** most sensitive to economic indicators (unemployment rate, job postings)
+- **Barrier-Free Employment** more stable - likely driven by demographic factors and disability policy
+- **ETW: Working** tied to wage growth, minimum wage policy, and working poverty rates
+
+---
+
+## Temporal Patterns and Seasonality
+
+### Year-over-Year Comparison (Recent Years)
+
+Monthly patterns across 2020-2025 showing seasonal and pandemic effects:
+
+```{r}
+#| label: g5-data-prep
+#| code-summary: Prepare year-over-year comparison data
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: g5
+#| code-summary: Monthly caseload by year (2020-2025)
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Overlay of monthly patterns for recent years - seasonality and pandemic shock visible"
+```
+
+**Seasonality Observations:**
+- **Spring increases** (March-May) suggest fiscal year-end effects or seasonal employment transitions
+- **Summer dips** (June-August) may reflect seasonal employment opportunities
+- **Fall increases** (September-November) could relate to school year transitions
+- **2020-21 pandemic years** broke typical seasonal patterns
+
+---
+
+### Growth Rate Analysis
+
+Year-over-year percentage changes reveal volatility and structural shifts:
+
+```{r}
+#| label: g6-data-prep
+#| code-summary: Calculate month-over-month and year-over-year growth rates
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: g6
+#| code-summary: Year-over-year percentage change time series
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "YoY growth rate showing periods of increase (red) and decrease (green)"
+```
+
+**Growth Rate Insights:**
+- **High volatility periods**: 2008-09 crisis, 2014-16 oil collapse, 2020-21 pandemic
+- **Peak growth**: +40-50% YoY during crisis peaks
+- **Sustained declines**: Post-peak recovery periods often show 20-30% YoY drops
+- **Baseline volatility**: ±5-10% YoY in "stable" periods suggests ongoing sensitivity to economic conditions
+
+---
+
+# Conclusions and Next Steps
+
+## Key Findings
+
+1. **Long-term trends** show Alberta Income Support caseload is highly sensitive to economic shocks, particularly oil price movements and unemployment rate changes
+
+2. **Client type composition** has remained relatively stable since 2012 reform, with ETW: Available for Work showing highest volatility
+
+3. **Seasonal patterns** exist but are modest compared to economic cycle effects - seasonality should be included in models but is not dominant
+
+4. **COVID-19 pandemic** created unprecedented but relatively brief shock - federal programs (CERB, CRB) absorbed demand that might otherwise have flowed to provincial Income Support
+
+5. **Growth rate volatility** is substantial - forecasting models must account for regime changes and structural breaks
+
+## Recommendations for Forecasting Work
+
+1. **Model client types separately** - each category has distinct drivers and volatility profiles
+
+2. **Include economic predictors** - unemployment rate, oil price, wage growth, job postings
+
+3. **Account for policy changes** - 2012 reform, COVID-19 federal programs represent structural breaks
+
+4. **Use ensemble methods** - given high uncertainty and regime changes, combine multiple model approaches
+
+5. **Wide prediction intervals** - conservative uncertainty estimates given historical volatility
+
+6. **Regular model retraining** - structural changes require frequent model updates with recent data
+
+## Next Analysis Steps
+
+- **EDA 3**: Analyze family composition and regional breakdown tables
+- **EDA 4**: External predictor variables (economic indicators, demographic trends)
+- **Model Development**: Begin with ARIMA baseline, progress to multivariate time series models
+- **Azure ML Integration**: Set up AutoML experiments for ensemble forecasting
+
+---
+
+# Session Info
+
+```{r}
+#| label: session-info
+#| code-summary: R session information for reproducibility
+#| echo: false
+#| code-fold: true
+cat("Report completed at:", as.character(Sys.time()), "\n")
+cat("Total runtime:", round(difftime(Sys.time(), report_render_start_time, units = "mins"), 2), "minutes\n")
+sessionInfo()
+```

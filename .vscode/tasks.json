@@ -312,6 +312,16 @@
 				"panel": "shared"
 			},
 			"problemMatcher": []
+		},
+		{
+			"label": "Render EDA-2 Quarto Report",
+			"type": "shell",
+			"command": "quarto",
+			"args": [
+				"render",
+				"analysis/eda-2/eda-2.qmd"
+			],
+			"group": "build"
 		}
 	]
 }

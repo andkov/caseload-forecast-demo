@@ -9,6 +9,11 @@ Human decisions and reasoning. AI copilots are prohibited to edit this file.
 
 # 2026-02-18
 
+## Create EDA-2
+
+Follow the example of eda-1 and compose ./analysis/eda-2/ that would introduce the reader to the data (focus on total caseload and client type tables only, ignore other tables to keep it simple for now). Focus on timeseries for visuals, but use other graphs when necessary. 
+
+
 ## Create Ellis
 
 Data Engineer, please compose ./manipulation/2-ellis.R that would input ./data-private/derived/open-data-is-1.sqlite that would create a set of tidy data tables to be written into ./data-private/derived/open-data-is-2.sqlite (a relational database that would be used as a starting point for subsequent analytic efforts). Follow the example of ./manipulation/example/ellis-lane-example.R. Make sure you verify each data type (see RAnalysisSkeleton). First, conduct a thorough exploration of the raw table and confirm your understanding of it with the human user. Wait for the confirmation of the list of table you will propose before creating it. 

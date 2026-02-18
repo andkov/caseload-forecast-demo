@@ -11,6 +11,10 @@ AI system status and technical briefings.
 
 Created `manipulation/2-test-ellis-cache.R` — a three-way alignment test verifying that the Ellis script (`2-ellis.R`), the artifacts it produces (Parquet + SQLite), and the CACHE-manifest (`data-public/metadata/CACHE-manifest.md`) all agree. Contains 229 assertions across 13 sections: artifact existence, SQLite↔Parquet parity, row counts, column schemas, temporal coverage, historical phase boundaries, wide↔long equivalence, data quality claims, manifest self-consistency, and script↔manifest agreement. Uses a custom `run_test(name, expr)` helper that tracks pass/fail/skip counts and exits with code 1 on any failure. Run via VS Code task "Test Ellis ↔ CACHE-Manifest Alignment" or `Rscript manipulation/2-test-ellis-cache.R`. **When to use**: after modifying `2-ellis.R`, updating `CACHE-manifest.md`, or before any analysis that depends on the Ellis cache — ensures the manifest analysts rely on describes reality.
 
+## eda-2
+
+Created `analysis/eda-2/` directory with time series analysis of Alberta Income Support caseload data. Includes `eda-2.R` (analysis script with 6 visualizations), `eda-2.qmd` (Quarto report), and `README.md`. **Data genealogy**: loads parquet files as ds0_total (total caseload 2005-2025) and ds0_client_type (client type breakdowns 2012-2025), transforms to ds1_total and ds1_client_type in tweak-data-1 chunk with date formatting. **Visualizations**: g1 (20-year time series), g2 (historical period comparison), g3 (stacked area by client type), g4 (faceted client type trends), g5 (year-over-year overlay 2020-2025), g6 (YoY growth rate). Follows eda-1 template pattern: chunk-based Quarto integration, httpgd support, automatic prints folder creation, data transformation tracking (ds0 → ds1 naming convention). **Key insight**: Each client type exhibits distinct volatility patterns justifying separate forecasting models. Render with VS Code task "Render EDA-2 Quarto Report" or `quarto render analysis/eda-2/eda-2.qmd`.
+
 ## 2-ellis
 
 
