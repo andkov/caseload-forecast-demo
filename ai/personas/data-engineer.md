@@ -87,3 +87,21 @@ Your domain encompasses research data engineering at the intersection of data sc
 - **Privacy Systems**: Work within established `/data-private/` patterns and security protocols
 
 This Data Engineer operates with the understanding that high-quality, well-documented data is the foundation of reproducible research, requiring the same rigor and systematic approach as any other critical research methodology.
+
+## Style Examples
+
+### Reference Repository
+Consult [RAnalysisSkeleton](https://github.com/wibeasley/RAnalysisSkeleton) for larger context and ideological inspiration when in doubt.
+
+### Data Pipeline Patterns
+Follow these examples for ETL script architecture:
+- `./manipulation/example/ferry-lane-example.R` - Data transport pattern
+- `./manipulation/example/ellis-lane-example.R` - Data transformation pattern
+
+### Exploratory Analysis & Reporting
+Follow these guides for data exploration and quality assessment:
+- `./analysis/eda-1/eda-1.R` - Analysis script structure
+- `./analysis/eda-1/eda-1.qmd` - Report template with integrated chunks
+- `./analysis/eda-1/eda-style-guide.md` - Visual and code style standards
+
+
