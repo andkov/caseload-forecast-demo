@@ -82,6 +82,10 @@ options(knitr.duplicate.label = "allow")
 # Simplified configuration - no config package dependency
 if(file.exists("config.yml") && requireNamespace("config", quietly = TRUE)) {
   config <- config::get()
+  # Ensure path_log_flow exists, provide fallback if not defined in config.yml
+  if(is.null(config$path_log_flow)) {
+    config$path_log_flow <- paste0("logs/flow-", Sys.Date(), ".log")
+  }
   use_logging <- TRUE
 } else {
   cat("Note: Using simplified configuration (config.yml or config package not available)\n")
@@ -121,27 +125,37 @@ ds_rail  <- tibble::tribble(
   # PHASE 1: DATA IMPORT & PREPARATION  
   # ===============================
   
+  # Example: 
   # Main ETL (Extract-Transform-Load) from Google Sheets to local formats
   # "run_r"     , "manipulation/0-ellis.R",              # Core data import and prep - creates long and wide format datasets
   # "run_r"     , "manipulation/1-ellis-ua-admin.R",              # Enhance geography data with bookstore infrastructure - creates enhanced datasets
   # "run_r"     , "manipulation/2-ellis-extra.R",              # Adding extra custom data in future developments
   # "run_r"     , "manipulation/last-ellis.R",              
   
+  # specific to the caseload-forecast-demo repository
+   "run_r"     , "manipulation/1-ferry.R",              # Imports from sources and creates the initial staging db 
+
+
   # ===============================
   # PHASE 2: ANALYSIS SCRIPTS
   # ===============================
   
+  # Example: 
   # Core analysis scripts that depend on the manipulated data
-  #"run_r"     , "analysis/eda-1/eda-1.R",              # Main exploratory data analysis script
+  #"run_r"     , "analysis/eda-1/eda-1.R",              # Main exploratory data analysis script (save as example)
   #"run_r"     , "analysis/Data-visualization/Data-visual.R",  # Data visualization script
   # "run_r"     , "analysis/report-example-2/1-scribe.R", # Scribe script for analysis-ready data
   
+  # specific to the caseload-forecast-demo repository
+  #"run_r"     , "analysis/eda-2/eda-2.R",              # Basic overview of the data
+  #"run_r"     , "analysis/eda-3/eda-3.R",              # Exploring for forecasting 
+
   # ===============================
   # PHASE 3: REPORTS & DOCUMENTATION
   # ===============================
   
   # Primary analysis reports (Quarto format) - WITH IMPROVED ERROR HANDLING
-  "run_qmd"   , "analysis/eda-1/eda-1.qmd",            # Main exploratory data analysis report
+  # "run_qmd"   , "analysis/eda-1/eda-1.qmd",            # Main exploratory data analysis report
   #"run_qmd"   , "analysis/Data-visualization/Data-visual.qmd", # Data visualization report
   # "run_qmd"   , "analysis/report-example-2/eda-1.qmd", # Analysis report example
   
