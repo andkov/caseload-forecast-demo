@@ -1,186 +1,283 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Activate Default Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_default(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Developer Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_developer(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Data Engineer Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_data_engineer(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Research Scientist Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_research_scientist(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate DevOps Engineer Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_devops_engineer(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Frontend Architect Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_frontend_architect(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Project Manager Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_project_manager(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Prompt Engineer Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_prompt_engineer(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Reporter Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_reporter(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Activate Grapher Persona",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); activate_grapher(); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Show AI Context Status",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/dynamic-context-builder.R'); show_context_status()"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Test AI Support System",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "source('ai/scripts/tests/run-all-tests.R')"
-      ],
-      "group": "test",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Render EDA-1 Quarto Report",
-      "detail": "Render EDA-1 analysis report (eda-1.qmd) with chunk integration",
-      "type": "process",
-      "command": "quarto",
-      "args": [
-        "render",
-        "analysis/eda-1/eda-1.qmd"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Run Ferry Pattern Example",
-      "detail": "Execute ferry-lane-example.R to transport mtcars from WAREHOUSE to CACHE",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "manipulation/ferry-lane-example.R"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "Run Ellis Pattern Example",
-      "detail": "Execute ellis-lane-example.R to transform mtcars into analysis-ready dataset",
-      "type": "process",
-      "command": "Rscript",
-      "args": [
-        "manipulation/ellis-lane-example.R"
-      ],
-      "group": "build",
-      "presentation": { "echo": true, "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Activate Default Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_default(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Developer Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_developer(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Data Engineer Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_data_engineer(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Research Scientist Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_research_scientist(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate DevOps Engineer Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_devops_engineer(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Frontend Architect Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_frontend_architect(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Project Manager Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_project_manager(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Prompt Engineer Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_prompt_engineer(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Reporter Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_reporter(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Activate Grapher Persona",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); activate_grapher(); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Show AI Context Status",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/dynamic-context-builder.R'); show_context_status()"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Test AI Support System",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"-e",
+				"source('ai/scripts/tests/run-all-tests.R')"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Render EDA-1 Quarto Report",
+			"detail": "Render EDA-1 analysis report (eda-1.qmd) with chunk integration",
+			"type": "process",
+			"command": "quarto",
+			"args": [
+				"render",
+				"analysis/eda-1/eda-1.qmd"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Ferry Pattern Example",
+			"detail": "Execute ferry-lane-example.R to transport mtcars from WAREHOUSE to CACHE",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"manipulation/ferry-lane-example.R"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Ellis Pattern Example",
+			"detail": "Execute ellis-lane-example.R to transform mtcars into analysis-ready dataset",
+			"type": "process",
+			"command": "Rscript",
+			"args": [
+				"manipulation/ellis-lane-example.R"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Ferry Lane 1",
+			"detail": "Execute ferry lane 1 to import Income Support data from multiple sources",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"manipulation/1-ferry.R"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Pipeline (flow.R)",
+			"detail": "Execute complete reproducible pipeline orchestrating all data and analysis scripts",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"flow.R"
+			],
+			"isBackground": false,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		}
+	]
 }
