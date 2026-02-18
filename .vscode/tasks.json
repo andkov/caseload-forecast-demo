@@ -261,7 +261,7 @@
 		},
 		{
 			"label": "Run Ellis Lane 2",
-			"detail": "Execute ellis lane 2 to transform Income Support data into 6 analysis-ready tables",
+			"detail": "Execute ellis lane 2 to transform Income Support data into 11 analysis-ready tables",
 			"type": "shell",
 			"command": "Rscript",
 			"args": [
@@ -269,6 +269,23 @@
 			],
 			"isBackground": false,
 			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Test Ellis ↔ CACHE-Manifest Alignment",
+			"detail": "Verify that CACHE-manifest.md accurately describes the artifacts produced by 2-ellis.R",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"manipulation/2-test-ellis-cache.R"
+			],
+			"isBackground": false,
+			"group": "test",
 			"presentation": {
 				"echo": true,
 				"reveal": "always",

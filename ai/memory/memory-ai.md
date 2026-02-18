@@ -7,6 +7,10 @@ AI system status and technical briefings.
 # 2026-02-18
 
 
+## 2-test-ellis-cache
+
+Created `manipulation/2-test-ellis-cache.R` — a three-way alignment test verifying that the Ellis script (`2-ellis.R`), the artifacts it produces (Parquet + SQLite), and the CACHE-manifest (`data-public/metadata/CACHE-manifest.md`) all agree. Contains 229 assertions across 13 sections: artifact existence, SQLite↔Parquet parity, row counts, column schemas, temporal coverage, historical phase boundaries, wide↔long equivalence, data quality claims, manifest self-consistency, and script↔manifest agreement. Uses a custom `run_test(name, expr)` helper that tracks pass/fail/skip counts and exits with code 1 on any failure. Run via VS Code task "Test Ellis ↔ CACHE-Manifest Alignment" or `Rscript manipulation/2-test-ellis-cache.R`. **When to use**: after modifying `2-ellis.R`, updating `CACHE-manifest.md`, or before any analysis that depends on the Ellis cache — ensures the manifest analysts rely on describes reality.
+
 ## 2-ellis
 
 

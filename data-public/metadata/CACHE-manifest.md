@@ -93,7 +93,7 @@ Alberta's Income Support reporting evolved over time, adding dimensions progress
 | 2     | Apr 2012 - Mar 2018 | 72     | + Client Type, Family Composition                                 |
 | 3     | Apr 2018 - Mar 2020 | 24     | + ALSS Regions                                                    |
 | 4     | Apr 2020 - Mar 2022 | 24     | + Average Age, Client Gender                                      |
-| 5     | Apr 2022 - Sep 2025 | 42     | + Gender "Other" category                                         |
+| 5     | Apr 2022 - Sep 2025 | 42     | + Gender "Other" category (first non-suppressed: Aug 2022)        |
 
 **Implication for Analysis**: When analyzing dimensional breakdowns (e.g., by region), you're limited to more recent time periods. For full historical context (2005-2025), use `total_caseload` only.
 
@@ -347,12 +347,12 @@ Gender distribution of caseload, supporting equity analysis and gender-responsiv
 
 - **Female** – Clients identifying as female (includes cisgender and transgender women)
 - **Male** – Clients identifying as male (includes cisgender and transgender men)
-- **Other** – Non-binary, two-spirit, or other gender identities (introduced April 2022)
+- **Other** – Non-binary, two-spirit, or other gender identities (column present from April 2020 as NA; first non-suppressed value August 2022)
 
 ### Usage Notes
 - **Coverage limitation**: Gender data available Apr 2020 onward (5.5 years)
-- **Taxonomy evolution**: "Other" category added April 2022 (Phase 5) – reflects inclusive data collection practices
-- **Historical analysis**: When analyzing 2020-2022, only Female/Male available; Other = NA for those periods
+- **Taxonomy evolution**: "Other" category column exists in data from April 2020 (all values NA/suppressed), with first **reportable (non-NA) value in August 2022** due to small-count suppression in earlier months
+- **Historical analysis**: When analyzing 2020 through July 2022, only Female/Male have non-NA values; Other = NA for Apr 2020 through Jul 2022
 - **Equity analysis**: Female clients historically represent majority (~52-55%) of Income Support caseload
 - **Intersectionality**: Cross-reference with family_composition (e.g., single mothers vs single fathers) for nuanced insights
 
