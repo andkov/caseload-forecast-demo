@@ -461,7 +461,7 @@ client_type_long <- client_type %>%
       client_type_category == "etw_working" ~ "ETW: Working",
       client_type_category == "etw_available_for_work" ~ "ETW: Available for Work",
       client_type_category == "etw_unavailable_for_work" ~ "ETW: Unavailable for Work",
-      client_type_category == "bfe" ~ "Barrier-Free Employment",
+      client_type_category == "bfe" ~ "Barriers to Full Employment",
       TRUE ~ client_type_category
     )
   )
