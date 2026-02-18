@@ -134,6 +134,7 @@ ds_rail  <- tibble::tribble(
   
   # specific to the caseload-forecast-demo repository
    "run_r"     , "manipulation/1-ferry.R",              # Imports from sources and creates the initial staging db 
+   "run_r"     , "manipulation/2-ellis.R",              # Transforms raw data into 6 tidy analysis-ready tables
 
 
   # ===============================

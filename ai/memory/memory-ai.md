@@ -6,6 +6,13 @@ AI system status and technical briefings.
 
 # 2026-02-18
 
+
+## 2-ellis
+
+
+
+## 1-ferry 
+
 Created manipulation/1-ferry.R implementing multi-source ferry pattern: validates data can be loaded identically from 4 sources (URL, CSV, SQLite, SQL Server) and writes to staging database. Added to flow.R as first pipeline script. Created manipulation/pipeline.md documenting distinction between Non-Flow Scripts (one-time setup like create-data-assets.R) and Flow Scripts (reproducible pipeline steps). Configured logging to data-private/logs/YYYY/YYYY-MM/ following RAnalysisSkeleton pattern. Created VS Code task "Run Pipeline (flow.R)" using Rscript for consistent execution. Fixed flow.R config handling to provide fallback when path_log_flow undefined in config.yml.
 
 ---
