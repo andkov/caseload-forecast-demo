@@ -23,6 +23,8 @@ library(arrow)     # parquet files
 library(janitor)  # tidy data
 library(testit)   # For asserting conditions meet expected patterns.
 library(fs)       # file system operations
+library(forecast)  # time series forecasting and diagnostics
+library(tseries)   # stationarity tests (ADF, KPSS)
 # ---- httpgd (VS Code interactive plots) ------------------------------------
 # If the httpgd package is installed, try to start it so VS Code R extension
 # can display interactive plots. This is optional and wrapped in tryCatch so
@@ -65,6 +67,14 @@ if (!fs::dir_exists(prints_folder)) {fs::dir_create(prints_folder)}
 
 # Path to analysis-ready parquet files from Ellis lane
 parquet_path <- "./data-private/derived/open-data-is-2-tables/"
+
+# Focal date for forecasting (per method.md: reference point for train/test split)
+# Train: all data through focal_date - 24 months
+# Test: last 24 months before focal_date (for backtesting)
+focal_date <- as.Date("2025-09-01")  # September 2025 (last month in dataset)
+message("Focal date set to: ", focal_date)
+message("Train period: through ", focal_date - months(24))
+message("Test period (backtest): (", focal_date - months(24), " to ", focal_date, "]")
 
 # ---- declare-functions -------------------------------------------------------
 # Custom function to format fiscal year dates on axis
@@ -268,7 +278,7 @@ g3_client_type_area <- ds1_client_type %>%
       "ETW: Working" = "#2166ac",
       "ETW: Available for Work" = "#4393c3",
       "ETW: Unavailable for Work" = "#92c5de",
-      "Barrier-Free Employment" = "#d6604d"
+      "Barriers to Full Employment" = "#d6604d"
     )
   ) +
   labs(
@@ -315,7 +325,7 @@ g4_client_type_facet <- ds1_client_type %>%
       "ETW: Working" = "#2166ac",
       "ETW: Available for Work" = "#4393c3",
       "ETW: Unavailable for Work" = "#92c5de",
-      "Barrier-Free Employment" = "#d6604d"
+      "Barriers to Full Employment" = "#d6604d"
     )
   ) +
   labs(
@@ -449,4 +459,255 @@ ggsave(paste0(prints_folder, "g6_yoy_growth.png"),
        g6_yoy_growth, width = 10, height = 6, dpi = 300)
 print(g6_yoy_growth)
 
+# ---- g7-data-prep -------------------------------------------
+# Prepare train/test split visualization and time series objects
+# Per method.md: Train through focal_date - 24 months, test = last 24 months
+train_cutoff <- focal_date %m-% months(24)
+
+g7_data <- ds1_total %>%
+  mutate(
+    dataset = case_when(
+      date <= train_cutoff ~ "Training",
+      date > train_cutoff & date <= focal_date ~ "Test (Backtest)",
+      TRUE ~ "Future"
+    )
+  ) %>%
+  mutate(dataset = factor(dataset, levels = c("Training", "Test (Backtest)", "Future")))
+
+message("📊 g7_data prepared: Train/test split at ", train_cutoff)
+message("   Training observations: ", sum(g7_data$dataset == "Training"))
+message("   Test observations: ", sum(g7_data$dataset == "Test (Backtest)"))
+
+# ---- g7 -----------------------------------------------------
+# Train/test split visualization showing where model will be trained vs validated
+g7_train_test_split <- g7_data %>%
+  ggplot(aes(x = date, y = caseload, color = dataset)) +
+  geom_line(size = 1) +
+  geom_point(size = 1.5, alpha = 0.6) +
+  geom_vline(xintercept = train_cutoff, linetype = "dashed", color = "red", size = 1) +
+  annotate("text", x = train_cutoff, y = max(g7_data$caseload, na.rm = TRUE) * 0.95, 
+           label = "Train/Test Split", angle = 90, vjust = -0.5, color = "red", size = 3.5) +
+  scale_x_date(
+    date_breaks = "2 years", 
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.02, 0.02))
+  ) +
+  scale_y_continuous(
+    labels = scales::comma_format(),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  scale_color_manual(
+    values = c("Training" = "#2166ac", "Test (Backtest)" = "#d6604d", "Future" = "gray70"),
+    name = "Dataset"
+  ) +
+  labs(
+    title = "Train/Test Split for Model Development",
+    subtitle = paste0("Training: through ", train_cutoff, " | Test: last 24 months for backtesting"), 
+    x = NULL,
+    y = "Total Caseload",
+    caption = "Per method.md Section 4: Hold out 24 months for model validation"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11, color = "gray40"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+
+# Save to prints folder
+ggsave(paste0(prints_folder, "g7_train_test_split.png"), 
+       g7_train_test_split, width = 10, height = 6, dpi = 300)
+print(g7_train_test_split)
+
+# ---- g8-data-prep -------------------------------------------
+# Prepare time series object for ACF/PACF analysis
+# Use training data only (as we would in actual modeling)
+ts_train <- ds1_total %>%
+  filter(date <= train_cutoff) %>%
+  arrange(date) %>%
+  pull(caseload) %>%
+  ts(frequency = 12, start = c(2005, 4))  # April 2005 start
+
+message("📊 ts_train prepared: ", length(ts_train), " observations for time series diagnostics")
+
+# Perform stationarity tests
+adf_test <- tseries::adf.test(ts_train, alternative = "stationary")
+kpss_test <- tseries::kpss.test(ts_train, null = "Trend")
+
+# Store results for display
+stationarity_results <- data.frame(
+  Test = c("Augmented Dickey-Fuller", "KPSS"),
+  Null_Hypothesis = c("Series has unit root (non-stationary)", "Series is trend-stationary"),
+  Test_Statistic = c(adf_test$statistic, kpss_test$statistic),
+  P_Value = c(adf_test$p.value, kpss_test$p.value),
+  Interpretation = c(
+    ifelse(adf_test$p.value < 0.05, "✓ Reject H0: Stationary", "✗ Fail to reject: Non-stationary"),
+    ifelse(kpss_test$p.value > 0.05, "✓ Fail to reject: Stationary", "✗ Reject H0: Non-stationary")
+  ),
+  stringsAsFactors = FALSE
+)
+
+# ---- g8 -----------------------------------------------------
+# Stationarity test results display
+cat("\n" , "=" ,rep("=", 70), "=\n", sep = "")
+cat("STATIONARITY TESTS (Training Data Only)\n")
+cat("=" ,rep("=", 70), "=\n", sep = "")
+print(stationarity_results, row.names = FALSE)
+cat("=" ,rep("=", 70), "=\n\n", sep = "")
+
+message("💡 Modeling Implications:")
+if (adf_test$p.value < 0.05 && kpss_test$p.value > 0.05) {
+  message("   ✓ Series appears stationary - ARIMA with d=0 may be appropriate")
+} else if (adf_test$p.value >= 0.05) {
+  message("   ⚠ Series may require differencing - ARIMA with d=1 likely needed")
+} else {
+  message("   ⚠ Mixed signals - recommend visual inspection and auto.arima() for order selection")
+}
+
+# ---- g9 -----------------------------------------------------
+# ACF plot for autocorrelation structure
+g9_acf <- ggplot2::ggplot() + 
+  ggplot2::theme_minimal() +
+  ggplot2::labs(
+    title = "Autocorrelation Function (ACF) - Training Data",
+    subtitle = "Identifies MA (moving average) order for ARIMA modeling",
+    caption = "Significant spikes suggest autocorrelation at those lags"
+  )
+
+# Generate ACF plot using base plotting then save
+png(paste0(prints_folder, "g9_acf.png"), width = 10, height = 6, units = "in", res = 300)
+forecast::Acf(ts_train, main = "ACF: Training Data (April 2005 - Sep 2023)", 
+              lag.max = 36, col = "steelblue", lwd = 2)
+dev.off()
+
+# Display in R session
+forecast::Acf(ts_train, main = "ACF: Training Data", lag.max = 36)
+
+# ---- g10 ----------------------------------------------------
+# PACF plot for partial autocorrelation structure  
+g10_pacf <- ggplot2::ggplot() + 
+  ggplot2::theme_minimal() +
+  ggplot2::labs(
+    title = "Partial Autocorrelation Function (PACF) - Training Data",
+    subtitle = "Identifies AR (autoregressive) order for ARIMA modeling",
+    caption = "Significant spikes suggest AR terms at those lags"
+  )
+
+# Generate PACF plot using base plotting then save
+png(paste0(prints_folder, "g10_pacf.png"), width = 10, height = 6, units = "in", res = 300)
+forecast::Pacf(ts_train, main = "PACF: Training Data (April 2005 - Sep 2023)", 
+               lag.max = 36, col = "firebrick", lwd = 2)
+dev.off()
+
+# Display in R session
+forecast::Pacf(ts_train, main = "PACF: Training Data", lag.max = 36)
+
+# ---- g11-data-prep ------------------------------------------
+# Seasonal decomposition using STL (Seasonal-Trend decomposition using Loess)
+stl_decomp <- stl(ts_train, s.window = "periodic")
+
+# Extract components for ggplot2 visualization
+g11_data <- data.frame(
+  date = seq.Date(from = as.Date("2005-04-01"), by = "month", length.out = length(ts_train)),
+  observed = as.numeric(ts_train),
+  trend = as.numeric(stl_decomp$time.series[, "trend"]),
+  seasonal = as.numeric(stl_decomp$time.series[, "seasonal"]),
+  remainder = as.numeric(stl_decomp$time.series[, "remainder"])
+) %>%
+  pivot_longer(cols = c(observed, trend, seasonal, remainder), 
+               names_to = "component", values_to = "value") %>%
+  mutate(component = factor(component, levels = c("observed", "trend", "seasonal", "remainder"),
+                            labels = c("Observed", "Trend", "Seasonal", "Remainder")))
+
+message("📊 g11_data prepared: STL decomposition with ", nrow(g11_data)/4, " time points")
+
+# ---- g11 ----------------------------------------------------
+# STL decomposition visualization
+g11_stl_decomp <- g11_data %>%
+  ggplot(aes(x = date, y = value)) +
+  geom_line(color = "steelblue", size = 0.8) +
+  facet_wrap(~ component, ncol = 1, scales = "free_y", strip.position = "right") +
+  scale_x_date(
+    date_breaks = "2 years", 
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0.01))
+  ) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  labs(
+    title = "Seasonal Decomposition (STL) - Training Data",
+    subtitle = "Separates observed series into trend, seasonal, and irregular components", 
+    x = NULL,
+    y = NULL,
+    caption = "Method: STL with periodic seasonal window | Informs seasonal adjustment strategy"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11, color = "gray40"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    strip.text = element_text(face = "bold", size = 10),
+    panel.grid.minor = element_blank()
+  )
+
+# Save to prints folder
+ggsave(paste0(prints_folder, "g11_stl_decomp.png"), 
+       g11_stl_decomp, width = 10, height = 10, dpi = 300)
+print(g11_stl_decomp)
+
+# ---- g12-data-prep ------------------------------------------
+# Compare original vs log-transformed series
+# Per method.md: ARIMA on log-transformed series recommended
+g12_data <- ds1_total %>%
+  filter(date <= train_cutoff) %>%
+  mutate(
+    caseload_original = caseload,
+    caseload_log = log(caseload)
+  ) %>%
+  select(date, caseload_original, caseload_log) %>%
+  pivot_longer(cols = c(caseload_original, caseload_log), 
+               names_to = "transformation", values_to = "value") %>%
+  mutate(transformation = factor(transformation, 
+                                 levels = c("caseload_original", "caseload_log"),
+                                 labels = c("Original Scale", "Log-Transformed")))
+
+message("📊 g12_data prepared: Original vs log comparison with ", nrow(g12_data)/2, " observations")
+
+# ---- g12 ----------------------------------------------------
+# Log transformation comparison
+g12_log_comparison <- g12_data %>%
+  ggplot(aes(x = date, y = value, color = transformation)) +
+  geom_line(size = 1) +
+  facet_wrap(~ transformation, ncol = 1, scales = "free_y") +
+  scale_x_date(
+    date_breaks = "2 years", 
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.02, 0.02))
+  ) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  scale_color_manual(values = c("Original Scale" = "steelblue", "Log-Transformed" = "coral")) +
+  labs(
+    title = "Original vs Log-Transformed Caseload - Training Data",
+    subtitle = "Log transformation stabilizes variance and can improve ARIMA model performance", 
+    x = NULL,
+    y = "Caseload",
+    caption = "Method.md specifies log-transformed series for ARIMA modeling"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11, color = "gray40"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none",
+    strip.text = element_text(face = "bold", size = 10),
+    panel.grid.minor = element_blank()
+  )
+
+# Save to prints folder
+ggsave(paste0(prints_folder, "g12_log_comparison.png"), 
+       g12_log_comparison, width = 10, height = 8, dpi = 300)
+print(g12_log_comparison)
+
 # nolint end
+

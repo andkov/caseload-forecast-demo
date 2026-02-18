@@ -28,17 +28,9 @@ This document provides an **exploratory analysis** of Alberta Income Support cas
 -   **Temporal Patterns**: Seasonal effects, year-over-year changes, and policy impact periods
 -   **Data Preparation for Forecasting**: Understanding historical patterns to inform predictive models
 
-**Key Analytical Questions:**
- - What are the long-term trends in Alberta Income Support caseload? 
- - How did major economic events (2008 crisis, oil price collapse, COVID-19) affect caseload? 
- - How has client composition shifted over time (Expected to Work vs Barrier-Free Employment)? 
- - What seasonal patterns exist in the data?
- - What growth rates characterize different historical periods?
+**Key Analytical Questions:** - What are the long-term trends in Alberta Income Support caseload? - How did major economic events (2008 crisis, oil price collapse, COVID-19) affect caseload? - How has client composition shifted over time (Expected to Work vs Barriers to Full Employment)? - What seasonal patterns exist in the data? - What growth rates characterize different historical periods?
 
-**Data Sources:**
-- **Raw Data**: Alberta Open Data - Income Support Monthly Caseload Statistics
-- **Analysis-Ready Data**: Processed through Ellis pattern ([manipulation/2-ellis.R](../../manipulation/2-ellis.R))
-- **Documentation**: See [CACHE-manifest.md](../../data-public/metadata/CACHE-manifest.md) for complete data dictionary
+**Data Sources:** - **Raw Data**: Alberta Open Data - Income Support Monthly Caseload Statistics - **Analysis-Ready Data**: Processed through Ellis pattern ([manipulation/2-ellis.R](../../manipulation/2-ellis.R)) - **Documentation**: See [CACHE-manifest.md](../../data-public/metadata/CACHE-manifest.md) for complete data dictionary
 
 Following the **template workflow**, we develop analytical insights iteratively in the companion `.R` script before publishing them here for broader consumption.
 
@@ -132,18 +124,10 @@ This report analyzes two primary datasets from the analysis-ready CACHE outputs:
 -   **ds0_total → ds1_total**: Complete time series from April 2005 to September 2025 (246 months) - the longest historical view available
 -   **ds0_client_type → ds1_client_type**: Client type breakdown from April 2012 to September 2025 (162 months) - introduced with Alberta Works reform
 
-**Data Genealogy:** 
-- Raw data → [Ferry Lane 1](../../manipulation/1-ferry.R) → CACHE database 
-- CACHE staging → [Ellis Lane 2](../../manipulation/2-ellis.R) → Analysis-ready parquet files
-- **Loaded as**: ds0_total, ds0_client_type
-- **Transformed to**: ds1_total, ds1_client_type (date formatting applied)
-- **Data Quality**: All Ellis quality checks passed, suppressed values handled, Nov 2020 duplicate corrected
+**Data Genealogy:** - Raw data → [Ferry Lane 1](../../manipulation/1-ferry.R) → CACHE database - CACHE staging → [Ellis Lane 2](../../manipulation/2-ellis.R) → Analysis-ready parquet files - **Loaded as**: ds0_total, ds0_client_type - **Transformed to**: ds1_total, ds1_client_type (date formatting applied) - **Data Quality**: All Ellis quality checks passed, suppressed values handled, Nov 2020 duplicate corrected
 
-**Client Type Categories:**
-- **ETW: Working** - Employed but income insufficient for self-sufficiency
-- **ETW: Available for Work** - Job-ready, actively seeking employment  
-- **ETW: Unavailable for Work** - Temporarily unable (caregiving, illness, training)
-- **Barrier-Free Employment** - Significant barriers (disabilities, complex circumstances)
+**Client Type Categories:** - **ETW: Working** - Employed but income insufficient for self-sufficiency - **ETW: Available for Work** - Job-ready, actively seeking employment\
+- **ETW: Unavailable for Work** - Temporarily unable (caregiving, illness, training) - **Barriers to Full Employment** - Significant barriers (disabilities, complex circumstances)
 
 ```{r }
 #| label: load-data
@@ -219,13 +203,14 @@ The complete 20-year historical perspective shows major inflection points driven
 ```
 
 **Key Observations:**
-- **2008-09 Financial Crisis**: Sharp increase in caseload as unemployment rose
-- **2012 Alberta Works Reform**: Policy changes introduced Expected to Work framework
-- **2014-16 Oil Price Collapse**: Sustained increase reflecting Alberta's resource economy sensitivity
-- **COVID-19 Pandemic (2020-21)**: Dramatic spike followed by rapid decline as federal programs absorbed demand
-- **Post-2022 Trends**: Stabilization at pre-pandemic baseline levels
 
----
+-   **2008-09 Financial Crisis**: Sharp increase in caseload as unemployment rose
+-   **2012 Alberta Works Reform**: Policy changes introduced Expected to Work framework
+-   **2014-16 Oil Price Collapse**: Sustained increase reflecting Alberta's resource economy sensitivity
+-   **COVID-19 Pandemic (2020-21)**: Dramatic spike followed by rapid decline as federal programs absorbed demand
+-   **Post-2022 Trends**: Stabilization at pre-pandemic baseline levels
+
+------------------------------------------------------------------------
 
 ### Historical Period Comparison
 
@@ -248,13 +233,9 @@ Aggregate statistics by major policy and economic periods:
 #| fig-cap: "How average monthly caseload varied across seven distinct historical periods"
 ```
 
-**Implications for Forecasting:**
-- Each period has distinct baseline levels and volatility patterns
-- COVID-19 represents unprecedented shock but relatively brief duration
-- Oil price sensitivity suggests economic indicators as valuable predictors
-- Policy changes (2012 reform) created structural shifts in caseload composition
+**Implications for Forecasting:** - Each period has distinct baseline levels and volatility patterns - COVID-19 represents unprecedented shock but relatively brief duration - Oil price sensitivity suggests economic indicators as valuable predictors - Policy changes (2012 reform) created structural shifts in caseload composition
 
----
+------------------------------------------------------------------------
 
 ## Client Type Composition Analysis
 
@@ -271,13 +252,9 @@ How caseload composition has shifted since the introduction of the Expected to W
 #| fig-cap: "Evolution of client type mix from April 2012 to September 2025 - stacked view"
 ```
 
-**Key Insights:**
-- **Barrier-Free Employment** (red) forms a relatively stable base layer
-- **ETW: Available for Work** (light blue) shows highest volatility - most responsive to economic conditions
-- **ETW: Working** (dark blue) represents income supplementation - reflects working poverty dynamics
-- **ETW: Unavailable for Work** (medium blue) smallest category, relatively stable
+**Key Insights:** - **Barriers to Full Employment** (red) forms a relatively stable base layer - **ETW: Available for Work** (light blue) shows highest volatility - most responsive to economic conditions - **ETW: Working** (dark blue) represents income supplementation - reflects working poverty dynamics - **ETW: Unavailable for Work** (medium blue) smallest category, relatively stable
 
----
+------------------------------------------------------------------------
 
 ### Faceted Time Series: Individual Category Trajectories
 
@@ -293,13 +270,9 @@ Detailed view of each client type's independent trajectory:
 #| fig-cap: "Four separate time series allowing comparison of growth patterns and volatility"
 ```
 
-**Forecasting Strategy Implications:**
-- Each category exhibits distinct patterns - **model separately rather than aggregating**
-- **ETW: Available for Work** most sensitive to economic indicators (unemployment rate, job postings)
-- **Barrier-Free Employment** more stable - likely driven by demographic factors and disability policy
-- **ETW: Working** tied to wage growth, minimum wage policy, and working poverty rates
+**Forecasting Strategy Implications:** - Each category exhibits distinct patterns - **model separately rather than aggregating** - **ETW: Available for Work** most sensitive to economic indicators (unemployment rate, job postings) - **Barriers to Full Employment** more stable - likely driven by demographic factors and disability policy - **ETW: Working** tied to wage growth, minimum wage policy, and working poverty rates
 
----
+------------------------------------------------------------------------
 
 ## Temporal Patterns and Seasonality
 
@@ -324,13 +297,9 @@ Monthly patterns across 2020-2025 showing seasonal and pandemic effects:
 #| fig-cap: "Overlay of monthly patterns for recent years - seasonality and pandemic shock visible"
 ```
 
-**Seasonality Observations:**
-- **Spring increases** (March-May) suggest fiscal year-end effects or seasonal employment transitions
-- **Summer dips** (June-August) may reflect seasonal employment opportunities
-- **Fall increases** (September-November) could relate to school year transitions
-- **2020-21 pandemic years** broke typical seasonal patterns
+**Seasonality Observations:** - **Spring increases** (March-May) suggest fiscal year-end effects or seasonal employment transitions - **Summer dips** (June-August) may reflect seasonal employment opportunities - **Fall increases** (September-November) could relate to school year transitions - **2020-21 pandemic years** broke typical seasonal patterns
 
----
+------------------------------------------------------------------------
 
 ### Growth Rate Analysis
 
@@ -353,50 +322,208 @@ Year-over-year percentage changes reveal volatility and structural shifts:
 #| fig-cap: "YoY growth rate showing periods of increase (red) and decrease (green)"
 ```
 
-**Growth Rate Insights:**
-- **High volatility periods**: 2008-09 crisis, 2014-16 oil collapse, 2020-21 pandemic
-- **Peak growth**: +40-50% YoY during crisis peaks
-- **Sustained declines**: Post-peak recovery periods often show 20-30% YoY drops
-- **Baseline volatility**: ±5-10% YoY in "stable" periods suggests ongoing sensitivity to economic conditions
+**Growth Rate Insights:** - **High volatility periods**: 2008-09 crisis, 2014-16 oil collapse, 2020-21 pandemic - **Peak growth**: +40-50% YoY during crisis peaks - **Sustained declines**: Post-peak recovery periods often show 20-30% YoY drops - **Baseline volatility**: ±5-10% YoY in "stable" periods suggests ongoing sensitivity to economic conditions
 
----
+------------------------------------------------------------------------
+
+# Time Series Diagnostics for Model Development
+
+This section provides statistical diagnostics to inform the model development strategy described in **method.md Section 4**. These analyses guide decisions on:
+
+-   Train/test split implementation
+-   Differencing requirements (d parameter in ARIMA)
+-   Seasonal vs non-seasonal modeling
+-   Log transformation necessity
+-   AR and MA order selection
+
+## Train/Test Split Visualization
+
+Per method.md specifications, we hold out the last 24 months for backtesting model performance:
+
+```{r}
+#| label: g7-data-prep
+#| code-summary: Define train/test split at focal_date - 24 months
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: g7
+#| code-summary: Visualize train vs test periods
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Training data (blue) through Sep 2023 | Test data (red) last 24 months for backtesting"
+```
+
+**Split Strategy:** - **Training**: April 2005 - September 2023 (222 months) - used for parameter estimation - **Test**: October 2023 - September 2025 (24 months) - held out for backtesting performance metrics - **Rationale**: 24-month horizon matches forecasting objective; test period includes recent data representative of current conditions
+
+------------------------------------------------------------------------
+
+## Stationarity Assessment
+
+ARIMA models require stationary series (constant mean and variance over time). We test stationarity using two complementary approaches:
+
+```{r}
+#| label: g8-data-prep
+#| code-summary: Prepare time series object and run stationarity tests (ADF, KPSS)
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: g8
+#| code-summary: Display stationarity test results
+#| code-fold: false
+#| eval: true
+#| cache: true
+```
+
+**Test Interpretation:** - **ADF (Augmented Dickey-Fuller)**: Tests null hypothesis of unit root (non-stationarity). p \< 0.05 indicates stationarity. - **KPSS**: Tests null hypothesis of trend-stationarity. p \> 0.05 indicates stationarity. - **Modeling implication**: If both tests agree series is non-stationary, differencing (d=1 in ARIMA) will be required.
+
+------------------------------------------------------------------------
+
+## Autocorrelation Structure
+
+ACF and PACF plots guide selection of MA (q) and AR (p) orders for ARIMA(p,d,q) models:
+
+### Autocorrelation Function (ACF)
+
+```{r}
+#| label: g9
+#| code-summary: ACF plot showing correlation structure across lags
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "ACF plot identifies MA order (q) - look for cutoff point where spikes become insignificant"
+```
+
+**ACF Interpretation:** - **Slow decay**: Suggests non-stationarity or strong trend component - **Sharp cutoff at lag k**: Suggests MA(k) process - **Seasonal spikes**: Every 12 lags indicates seasonal pattern (consider SARIMA)
+
+------------------------------------------------------------------------
+
+### Partial Autocorrelation Function (PACF)
+
+```{r}
+#| label: g10
+#| code-summary: PACF plot showing partial correlation structure
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "PACF plot identifies AR order (p) - look for cutoff point after which partial correlations are insignificant"
+```
+
+**PACF Interpretation:** - **Sharp cutoff at lag k**: Suggests AR(k) process - **Exponential decay**: Suggests MA component - **Combined with ACF**: Guides manual ARIMA order selection or validates `auto.arima()` choices
+
+------------------------------------------------------------------------
+
+## Seasonal Decomposition
+
+STL (Seasonal-Trend decomposition using Loess) separates the series into trend, seasonal, and irregular components:
+
+```{r}
+#| label: g11-data-prep
+#| code-summary: Perform STL decomposition on training data
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: g11
+#| code-summary: STL decomposition showing trend, seasonal, and remainder components
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-height: 10
+#| fig-cap: "Decomposition reveals: (1) strong upward trend 2005-2020, (2) modest seasonal pattern, (3) large irregular shocks during crises"
+```
+
+**Decomposition Insights:** - **Trend**: Shows long-term direction and structural shifts (2008 crisis, 2014 oil collapse, COVID-19) - **Seasonal**: Magnitude indicates whether SARIMA (seasonal ARIMA) is warranted vs simple ARIMA - **Remainder**: Large spikes suggest external shocks that may require intervention variables or regime-switching models
+
+**Modeling Implications:** - If seasonal component is small relative to trend/remainder → use non-seasonal ARIMA - If seasonal component is substantial → use SARIMA with seasonal orders (P,D,Q)\[12\] - Large remainder variance → wide prediction intervals needed
+
+------------------------------------------------------------------------
+
+## Log Transformation Assessment
+
+Method.md specifies log transformation for ARIMA modeling to stabilize variance:
+
+```{r}
+#| label: g12-data-prep
+#| code-summary: Compare original vs log-transformed series
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+```{r}
+#| label: g12
+#| code-summary: Original scale vs log-transformed scale comparison
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-height: 8
+#| fig-cap: "Log transformation reduces heteroscedasticity (variance increasing with level) common in count data"
+```
+
+**Transformation Benefits:** - **Variance stabilization**: Reduces tendency for volatility to increase with caseload level - **Multiplicative decomposition**: Converts multiplicative seasonality to additive (easier for ARIMA) - **Forecast interpretation**: Predictions on log scale back-transformed to counts with exponential function
+
+**Implementation Note**: All ARIMA models in train-1/model-1.R will use log-transformed series as input.
+
+------------------------------------------------------------------------
 
 # Conclusions and Next Steps
 
 ## Key Findings
 
-1. **Long-term trends** show Alberta Income Support caseload is highly sensitive to economic shocks, particularly oil price movements and unemployment rate changes
+1.  **Long-term trends** show Alberta Income Support caseload is highly sensitive to economic shocks, particularly oil price movements and unemployment rate changes
 
-2. **Client type composition** has remained relatively stable since 2012 reform, with ETW: Available for Work showing highest volatility
+2.  **Client type composition** has remained relatively stable since 2012 reform, with ETW: Available for Work showing highest volatility
 
-3. **Seasonal patterns** exist but are modest compared to economic cycle effects - seasonality should be included in models but is not dominant
+3.  **Seasonal patterns** exist but are modest compared to economic cycle effects - seasonality should be included in models but is not dominant
 
-4. **COVID-19 pandemic** created unprecedented but relatively brief shock - federal programs (CERB, CRB) absorbed demand that might otherwise have flowed to provincial Income Support
+4.  **COVID-19 pandemic** created unprecedented but relatively brief shock - federal programs (CERB, CRB) absorbed demand that might otherwise have flowed to provincial Income Support
 
-5. **Growth rate volatility** is substantial - forecasting models must account for regime changes and structural breaks
+5.  **Growth rate volatility** is substantial - forecasting models must account for regime changes and structural breaks
 
 ## Recommendations for Forecasting Work
 
-1. **Model client types separately** - each category has distinct drivers and volatility profiles
+1.  **Model client types separately** - each category has distinct drivers and volatility profiles
 
-2. **Include economic predictors** - unemployment rate, oil price, wage growth, job postings
+2.  **Include economic predictors** - unemployment rate, oil price, wage growth, job postings
 
-3. **Account for policy changes** - 2012 reform, COVID-19 federal programs represent structural breaks
+3.  **Account for policy changes** - 2012 reform, COVID-19 federal programs represent structural breaks
 
-4. **Use ensemble methods** - given high uncertainty and regime changes, combine multiple model approaches
+4.  **Use ensemble methods** - given high uncertainty and regime changes, combine multiple model approaches
 
-5. **Wide prediction intervals** - conservative uncertainty estimates given historical volatility
+5.  **Wide prediction intervals** - conservative uncertainty estimates given historical volatility
 
-6. **Regular model retraining** - structural changes require frequent model updates with recent data
+6.  **Regular model retraining** - structural changes require frequent model updates with recent data
 
 ## Next Analysis Steps
 
-- **EDA 3**: Analyze family composition and regional breakdown tables
-- **EDA 4**: External predictor variables (economic indicators, demographic trends)
-- **Model Development**: Begin with ARIMA baseline, progress to multivariate time series models
-- **Azure ML Integration**: Set up AutoML experiments for ensemble forecasting
+**Immediate Next Step: train-1/model-1.R**
 
----
+Based on these diagnostic findings, implement the training pipeline (method.md Section 4):
+
+1.  **Load training data through Sep 2023** (focal_date - 24 months)
+2.  **Implement 4 model tiers**:
+    -   Tier 1: Naive baseline (last value forward)
+    -   Tier 2: ARIMA with auto-selected orders on log-transformed series
+    -   Tier 3: ARIMA + static predictor (gender composition)
+    -   Tier 4: ARIMA + time-varying predictor (placeholder structure)
+3.  **Backtest on Oct 2023 - Sep 2025** (24-month test period)
+4.  **Compare performance metrics**: RMSE, MAE, MAPE across tiers
+5.  **Save model objects** as .rds in `./data-private/derived/models/`
+
+**Diagnostic Guidance from This EDA:** - Use **log-transformed series** (variance stabilization confirmed) - Expect **differencing requirement** (stationarity tests indicate d=1 likely needed) - Consider **seasonal terms** if auto.arima() suggests (seasonal component is modest but present) - Anticipate **wide prediction intervals** due to structural breaks and high remainder variance in decomposition
+
+**Longer-Term Steps:** - **EDA 3**: Client type-specific analysis (separate models per category as recommended) - **EDA 4**: External predictor integration (economic indicators, policy variables) - **Azure ML Migration**: Refactor train-1 for cloud execution with MLflow tracking
+
+------------------------------------------------------------------------
 
 # Session Info
 
