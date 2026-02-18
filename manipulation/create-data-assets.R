@@ -50,7 +50,7 @@ csv_path <- "./data-public/raw/is-aggregated-data-april-2005-sep-2025.csv"
 
 # SQLite database configuration
 sqlite_dir <- "./data-public/raw/"
-sqlite_file <- "open-data-is.sqlite"
+sqlite_file <- "open-data-is-sep-2025.sqlite"
 sqlite_path <- file.path(sqlite_dir, sqlite_file)
 sqlite_table <- "open_data_is_sep_2025"
 
