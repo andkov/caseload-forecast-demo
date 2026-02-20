@@ -77,7 +77,7 @@ get_persona_configs <- function() {
     ),
     "data-engineer" = list(
       file = get_persona_path("data-engineer.md"),
-      default_context = c("cache-manifest","project/glossary")
+      default_context = c("cache-manifest", "project/mission", "project/method", "project/glossary")
     ),
     "research-scientist" = list(
       file = get_persona_path("research-scientist.md"),
