@@ -4,6 +4,14 @@ AI system status and technical briefings.
 
 ---
 
+# 2026-02-20
+
+## 6-pattern pipeline architecture
+
+Restructured the project pipeline from an informal Ferry → Ellis → EDA → Train → Forecast → Report sequence into a formal **6-pattern architecture**: Ferry (1) → Ellis (2) → Mint (3) → Train (4) → Forecast (5) → Report (6). Key changes: introduced **Mint pattern** as the model-ready data preparation stage between Ellis and Train; redefined **EDA as advisory** (not a numbered lane — informs Mint but produces no artifacts consumed by downstream scripts); established **Mint-Train-Forecast lineage** as a versioned chain keyed by `focal_date`. Updated 10 files: glossary.md, method.md, mission.md, flow.R, config.yml, manipulation/README.md, manipulation/pipeline.md, analysis/eda-2/README.md, ai/personas/data-engineer.md, .vscode/tasks.json. Added `focal_date`, `backtest_months`, `forge`/`models` paths to config.yml. The `.github/copilot-instructions.md` auto-regenerates on next persona activation.
+
+---
+
 # 2026-02-18
 
 
