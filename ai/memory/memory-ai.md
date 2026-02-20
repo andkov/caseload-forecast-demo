@@ -10,6 +10,10 @@ AI system status and technical briefings.
 
 Restructured the project pipeline from an informal Ferry → Ellis → EDA → Train → Forecast → Report sequence into a formal **6-pattern architecture**: Ferry (1) → Ellis (2) → Mint (3) → Train (4) → Forecast (5) → Report (6). Key changes: introduced **Mint pattern** as the model-ready data preparation stage between Ellis and Train; redefined **EDA as advisory** (not a numbered lane — informs Mint but produces no artifacts consumed by downstream scripts); established **Mint-Train-Forecast lineage** as a versioned chain keyed by `focal_date`. Updated 10 files: glossary.md, method.md, mission.md, flow.R, config.yml, manipulation/README.md, manipulation/pipeline.md, analysis/eda-2/README.md, ai/personas/data-engineer.md, .vscode/tasks.json. Added `focal_date`, `backtest_months`, `forge`/`models` paths to config.yml. The `.github/copilot-instructions.md` auto-regenerates on next persona activation.
 
+## 3-mint-IS.R: Mint Lane 3
+
+Implemented `manipulation/3-mint-IS.R` — the single unified Mint lane producing all model-ready artifacts for all four Train tiers. Architecture decision: one-mint-serves-all (prevents artifact drift, single `forge_hash`). All data artifacts stored as **Apache Parquet** (cross-language: R/Python/Azure ML); fitted model objects remain `.rds` in Train lane. `ts` objects are built in-memory for validation but not persisted — Train lane reconstructs them from `ds_*.parquet`. Produces 12 forge artifacts: `ds_train/test/full.parquet`, `xreg_train/test/full/future.parquet`, `xreg_dynamic_*.parquet` (0-row placeholder for Tier 4), `forge_manifest.yml`. Activated in `flow.R`. Validated via `manipulation/nonflow/inspect-forge.R`. forge_hash: `ce3566ba5bd711426c9a4519f000d601` (focal_date 2025-09-01). Updated docs: method.md, glossary.md, analysis/eda-2/README.md.
+
 ---
 
 # 2026-02-18
