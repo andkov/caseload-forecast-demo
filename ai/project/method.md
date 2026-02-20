@@ -47,23 +47,27 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
   - Apply log transform (if EDA-confirmed)
   - Construct `ts` objects for train, test, and full series
   - Build xreg matrices for model tiers requiring exogenous regressors
-- **Output**: Serialized `.rds` artifacts in `./data-private/derived/forge/` + `forge_manifest.yml`
+- **Output**: Apache Parquet data artifacts in `./data-private/derived/forge/` + `forge_manifest.yml`
+  - `ds_train/test/full.parquet` — data frame slices (Train lane reconstructs `ts` objects from these)
+  - `xreg_train/test/full/future.parquet` — exogenous regressors with `date` column (cross-language)
+  - `xreg_dynamic_*.parquet` — 0-row schema placeholder for Tier 4
 - **Validation**: Contract assertions (row counts, date boundaries, transform flags)
 - **Forbidden**: Model fitting, new data sourcing, re-running Ellis logic
 
 ### 4. Train Pattern (Model Estimation)
-- **Input**: Mint artifacts only (`ts_train.rds`, `xreg_*.rds`, `forge_manifest.yml`) — never Ellis output directly
+- **Input**: Mint artifacts only (`ds_*.parquet`, `xreg_*.parquet`, `forge_manifest.yml`) — never Ellis output directly
+  - Reconstruct `ts` objects: `ts(ds_train$y, start=c(year(min(date)), month(min(date))), frequency=12)`
 - **Train/test split**: Defined by Mint; uses all data through `focal_date - 24 months` for training; holds out last 24 months for backtesting
 - **Model tiers** (increasing complexity):
   1. **Naive baseline**: Last observed value propagated forward (benchmark)
   2. **ARIMA**: Auto-selected orders via `forecast::auto.arima()` on log-transformed series
   3. **ARIMA + static predictor**: Include client type as exogenous regressor (slowly-varying in demo data)
   4. **ARIMA + time-varying predictor**: Placeholder for economic indicator (e.g., oil price, unemployment rate) — structure only, real covariate TBD
-- **Model storage**: Save fitted model objects as `.rds` in `./data-private/derived/models/`; register metadata in model registry CSV with `forge_hash` linking back to `forge_manifest.yml`
+- **Model storage**: Save fitted model objects as `.rds` in `./data-private/derived/models/` (R-native format; model objects cannot be stored as parquet); register metadata in model registry CSV with `forge_hash` linking back to `forge_manifest.yml`
 - **Performance metrics**: RMSE, MAE, MAPE on held-out 24-month backtesting window
 
 ### 5. Forecast Pattern Pattern (Prediction)
-- **Input**: Train model `.rds` + Mint `ts_full.rds` for forward projection
+- **Input**: Train model `.rds` + Mint `ds_full.parquet` for forward projection (reconstruct `ts_full` on load)
 - **Horizon**: 24 months ahead from `focal_date`
 - **Outputs**:
   - Point forecasts + 80%/95% prediction intervals for each model tier
@@ -88,7 +92,7 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
 
 - **R vs. Python**: Keep data wrangling in R (ferry/ellis patterns stable); consider Python for model training if Azure ML integration is smoother
 - **Compute allocation**: Use cheap CPU instances for ferry/ellis; evaluate GPU necessity for complex models (unlikely for ARIMA)
-- **Model registry**: Transition from local `.rds` files to Azure ML model registry with MLflow tracking
+- **Model registry**: Transition from local model `.rds` files to Azure ML model registry with MLflow tracking; data artifacts already in Parquet align natively with Azure ML `TabularDataset`
 - **Endpoint serving**: Deploy best-performing model as REST API endpoint for programmatic access (e.g., Power BI integration)
 - **Pipeline orchestration**: Refactor `flow.R` into Azure ML pipeline with parameterized components (one pipeline step = one pattern/lane)
 - **Scheduling**: Monthly refresh via Azure ML scheduled pipeline runs (replaces manual `Rscript flow.R` execution)

@@ -147,7 +147,7 @@ ds_rail  <- tibble::tribble(
   # Mint lanes consume Ellis output + EDA-confirmed decisions
   # to produce serialized ts/xreg objects for Train lanes.
   # EDA scripts (analysis/eda-*) are advisory and run outside the flow.
-  #"run_r"     , "manipulation/3-mint-IS.R",            # Prepare model-ready data slices for IS forecasting
+   "run_r"     , "manipulation/3-mint-IS.R",            # Prepare model-ready data slices for IS forecasting
 
   # ===============================
   # PHASE 4: TRAIN (Model Estimation)

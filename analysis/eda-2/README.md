@@ -246,9 +246,10 @@ This EDA provides the diagnostic foundation for the Mint pattern (method.md §3)
    - `[EDA-004]` 24-month backtest window (g7 split visualization)
    - `[EDA-005]` Wide prediction intervals expected (g11 decomposition shows large irregular component)
 
-2. **Mint outputs** (consumed by Train lanes):
-   - `ts_train.rds`, `ts_test.rds`, `ts_full.rds` — time series objects
-   - `xreg_static_train.rds`, `xreg_static_test.rds` — regressor matrices
+2. **Mint outputs** (consumed by Train lanes — all Apache Parquet for cross-language compatibility):
+   - `ds_train/test/full.parquet` — data frame slices; Train lane reconstructs `ts` objects from `$y` column
+   - `xreg_train/test/full/future.parquet` — exogenous regressors with `date` column
+   - `xreg_dynamic_*.parquet` — 0-row schema placeholder for Tier 4
    - `forge_manifest.yml` — data contract documenting split dates, transforms, row counts
 
 3. **Train lanes** (consume Mint artifacts, never Ellis output directly):

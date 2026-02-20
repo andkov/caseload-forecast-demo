@@ -33,20 +33,24 @@ Model-ready data preparation pattern that shapes Ellis output into standardized 
 - **Codifies**: EDA-confirmed analytical decisions (e.g., log transform, seasonal period, differencing order)
 - **Forbidden**: Model fitting, new data sourcing, re-running Ellis logic
 - **Input**: Ellis parquet output + EDA-informed decisions
-- **Output**: Serialized `.rds` artifacts (ts objects, xreg matrices) in `./data-private/derived/forge/` + `forge_manifest.yml`
+- **Output**: Apache Parquet data artifacts in `./data-private/derived/forge/` + `forge_manifest.yml`
+  - `ds_train/test/full.parquet` — data frame slices; Train lane reconstructs `ts` objects from `$y` column
+  - `xreg_train/test/full/future.parquet` — exogenous regressors with `date` column for cross-language use
+  - `xreg_dynamic_*.parquet` — 0-row schema placeholder for Tier 4
+- **Note**: `ts` objects are built in-memory during Mint for validation but **not persisted** (parquet is the on-disk format)
 - **Documentation**: Generates forge_manifest.yml
 
 ### Train Pattern
 Model estimation pattern that fits statistical models and evaluates diagnostic quality. Each Train lane consumes Mint artifacts only — never Ellis output directly.
 - **Process**: Estimate model parameters on training slice, evaluate fit diagnostics, backtest on held-out window
-- **Input**: Mint artifacts (`ts_train.rds`, `xreg_*.rds`, `forge_manifest.yml`)
-- **Output**: Fitted model `.rds` in `./data-private/derived/models/` + model registry entry
+- **Input**: Mint artifacts (`ds_*.parquet`, `xreg_*.parquet`, `forge_manifest.yml`); reconstruct `ts` objects on load
+- **Output**: Fitted model `.rds` in `./data-private/derived/models/` + model registry entry (R model objects cannot be stored as parquet)
 - **Versioning**: Each model links to its `forge_manifest.yml` via `forge_hash` in the model registry
 
 ### Forecast Pattern
 Prediction generation pattern that produces forward-looking forecasts from Train model objects.
 - **Process**: Apply fitted model to full series, generate point forecasts + prediction intervals for configured horizon
-- **Input**: Train model `.rds` + Mint `ts_full.rds` for forward projection
+- **Input**: Train model `.rds` + Mint `ds_full.parquet` for forward projection (reconstruct `ts_full` on load)
 - **Output**: CSV of point forecasts + intervals, Quarto report
 - **Horizon**: Configured in `config.yml` (default: 24 months from `focal_date`)
 
@@ -69,7 +73,7 @@ The Mint, Train, and Forecast patterns form a versioned chain where each stage's
 Ellis output → [EDA insight] → Mint → Train → Forecast
                                  │       │        │
                            forge_manifest │   forecast CSV
-                                 │    model .rds   │
+                                 │    model .rds   │   (data artifacts: .parquet)
                                  └── forge_hash ────┘
                                    (versioning bond)
 ```
