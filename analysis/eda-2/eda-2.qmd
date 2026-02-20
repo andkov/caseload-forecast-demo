@@ -513,7 +513,7 @@ Based on these diagnostic findings, implement the training pipeline (method.md S
 2.  **Implement 4 model tiers**:
     -   Tier 1: Naive baseline (last value forward)
     -   Tier 2: ARIMA with auto-selected orders on log-transformed series
-    -   Tier 3: ARIMA + static predictor (gender composition)
+    -   Tier 3: ARIMA + static predictor (client type)
     -   Tier 4: ARIMA + time-varying predictor (placeholder structure)
 3.  **Backtest on Oct 2023 - Sep 2025** (24-month test period)
 4.  **Compare performance metrics**: RMSE, MAE, MAPE across tiers

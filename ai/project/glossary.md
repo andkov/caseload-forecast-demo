@@ -7,10 +7,10 @@ Core terms for standardizing project communication.
 ## Data Pipeline Terminology
 
 ### Pattern
-A reusable solution template for common data pipeline tasks. Patterns define the structure, philosophy, and constraints for a category of operations. Examples: Ferry Pattern, Ellis Pattern.
+A reusable solution template for common data pipeline tasks. Patterns define the structure, philosophy, and constraints for a category of operations. The project uses six patterns: Ferry, Ellis, Mint, Train, Forecast, Report.
 
 ### Lane
-A specific implementation instance of a pattern within a project. Lanes are numbered to indicate approximate execution order. Examples: `0-ferry-IS.R`, `1-ellis-customer.R`, `3-ferry-LMTA.R`.
+A specific implementation instance of a pattern within a project. A lane may be implemented as a single script or a group of scripts operating within the same pattern. Lanes are numbered to indicate approximate execution order across the full pipeline. Examples: `1-ferry.R`, `2-ellis.R`, `3-mint-IS.R`, `4-train-arima.R`, `5-forecast-IS.R`, `6-report-IS.qmd`.
 
 ### Ferry Pattern
 Data transport pattern that moves data between storage locations with minimal/zero semantic transformation. Like a "cargo ship" - carries data intact. 
@@ -26,6 +26,56 @@ Data transformation pattern that creates clean, analysis-ready datasets. Named a
 - **Input**: CACHE staging (ferry output), flat files, parquet
 - **Output**: CACHE database (project schema), WAREHOUSE archive, parquet files
 - **Documentation**: Generates CACHE-manifest.md
+
+### Mint Pattern
+Model-ready data preparation pattern that shapes Ellis output into standardized artifacts consumed by Train lanes. Named for coin minting — producing a standardized artifact of exact specification from refined material.
+- **Applies**: Train/test split (keyed to `focal_date`), log transforms, xreg matrix construction, temporal subsetting
+- **Codifies**: EDA-confirmed analytical decisions (e.g., log transform, seasonal period, differencing order)
+- **Forbidden**: Model fitting, new data sourcing, re-running Ellis logic
+- **Input**: Ellis parquet output + EDA-informed decisions
+- **Output**: Serialized `.rds` artifacts (ts objects, xreg matrices) in `./data-private/derived/forge/` + `forge_manifest.yml`
+- **Documentation**: Generates forge_manifest.yml
+
+### Train Pattern
+Model estimation pattern that fits statistical models and evaluates diagnostic quality. Each Train lane consumes Mint artifacts only — never Ellis output directly.
+- **Process**: Estimate model parameters on training slice, evaluate fit diagnostics, backtest on held-out window
+- **Input**: Mint artifacts (`ts_train.rds`, `xreg_*.rds`, `forge_manifest.yml`)
+- **Output**: Fitted model `.rds` in `./data-private/derived/models/` + model registry entry
+- **Versioning**: Each model links to its `forge_manifest.yml` via `forge_hash` in the model registry
+
+### Forecast Pattern
+Prediction generation pattern that produces forward-looking forecasts from Train model objects.
+- **Process**: Apply fitted model to full series, generate point forecasts + prediction intervals for configured horizon
+- **Input**: Train model `.rds` + Mint `ts_full.rds` for forward projection
+- **Output**: CSV of point forecasts + intervals, Quarto report
+- **Horizon**: Configured in `config.yml` (default: 24 months from `focal_date`)
+
+### Report Pattern
+Final deliverable assembly pattern that combines EDA, model performance, and forecasts into publication-ready output.
+- **Input**: EDA reports, Train performance metrics, Forecast outputs
+- **Output**: Static HTML report for stakeholder delivery
+- **Delivery**: SharePoint/network drive (Phase 1); Azure Static Web App + AAD auth (Phase 2)
+
+### EDA (Exploratory Data Analysis)
+Exploratory analysis that operates on Ellis output. EDA is **not a numbered lane** in the pipeline — it is a lateral analytical activity that produces reports and insight, not data artifacts consumed by downstream scripts. EDA findings are codified as documented decisions in Mint scripts (e.g., `[EDA-001] Log transform: TRUE`).
+
+---
+
+## Mint-Train-Forecast Lineage
+
+The Mint, Train, and Forecast patterns form a versioned chain where each stage's output is traceable to its input. All three stages are keyed by `focal_date`. Changing `focal_date` invalidates all Mint, Train, and Forecast artifacts. The `forge_manifest.yml` provides the hash that links a model registry entry back to its exact input data slice.
+
+```
+Ellis output → [EDA insight] → Mint → Train → Forecast
+                                 │       │        │
+                           forge_manifest │   forecast CSV
+                                 │    model .rds   │
+                                 └── forge_hash ────┘
+                                   (versioning bond)
+```
+
+### Forge Manifest
+YAML file (`forge_manifest.yml`) documenting the data contract between Mint and Train: `focal_date`, split date, transform decisions (log, seasonal period), row counts, and EDA decision references. Analogous to CACHE-manifest for Ellis, but for model-ready artifacts.
 
 ---
 
@@ -76,6 +126,9 @@ Documentation file (`./data-public/metadata/CACHE-manifest.md`) describing analy
 ### INPUT-manifest
 Documentation file (`./data-public/metadata/INPUT-manifest.md`) describing raw input data before Ferry/Ellis processing.
 
+### Forge Manifest
+YAML file (`./data-private/derived/forge/forge_manifest.yml`) documenting model-ready data slices produced by Mint pattern. Includes `focal_date`, split boundaries, transform decisions, row counts, and EDA decision log.
+
 ---
 
 ## Forecasting Terminology
@@ -98,7 +151,7 @@ Retrospective evaluation of forecast accuracy by pretending past data points are
 Classification of forecasting models by complexity:
 1. **Naive baseline**: Simple benchmark (last value carried forward)
 2. **ARIMA**: Autoregressive integrated moving average (univariate time series model)
-3. **ARIMA + static predictor**: Includes time-invariant exogenous variable (e.g., gender composition)
+3. **ARIMA + static predictor**: Includes time-invariant exogenous variable (e.g., client type)
 4. **ARIMA + time-varying predictor**: Includes dynamic covariate (e.g., economic indicator)
 
 ### Prediction Interval

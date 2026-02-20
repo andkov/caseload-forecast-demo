@@ -235,30 +235,33 @@ install.packages("httpgd", repos = "https://cran.rstudio.com", type = "win.binar
 
 ## Next Steps
 
-**Immediate: train-1/model-1.R Implementation**
+**Immediate: Mint Lane Implementation (`3-mint-IS.R`)**
 
-This EDA provides the diagnostic foundation for implementing method.md Section 4 (Model Estimation):
+This EDA provides the diagnostic foundation for the Mint pattern (method.md §3), which codifies these analytical decisions into reproducible model-ready data slices:
 
-1. **Model tiers to implement**:
+1. **EDA decisions to codify in Mint**:
+   - `[EDA-001]` Use log transformation (g12 confirms variance stabilization)
+   - `[EDA-002]` Expect d=1 differencing (g8 stationarity tests)
+   - `[EDA-003]` Seasonal period = 12 (monthly, fiscal year cycle)
+   - `[EDA-004]` 24-month backtest window (g7 split visualization)
+   - `[EDA-005]` Wide prediction intervals expected (g11 decomposition shows large irregular component)
+
+2. **Mint outputs** (consumed by Train lanes):
+   - `ts_train.rds`, `ts_test.rds`, `ts_full.rds` — time series objects
+   - `xreg_static_train.rds`, `xreg_static_test.rds` — regressor matrices
+   - `forge_manifest.yml` — data contract documenting split dates, transforms, row counts
+
+3. **Train lanes** (consume Mint artifacts, never Ellis output directly):
    - Tier 1: Naive baseline (benchmark)
    - Tier 2: ARIMA on log-transformed series (auto-selected orders)
-   - Tier 3: ARIMA + static predictor (gender composition)
+   - Tier 3: ARIMA + static predictor (client type)
    - Tier 4: ARIMA + time-varying predictor (structure only)
-
-2. **Key decisions informed by this EDA**:
-   - Use log transformation (g12 confirms variance stabilization)
-   - Expect d=1 differencing (g8 stationarity tests)
-   - Reference ACF/PACF patterns (g9, g10) when interpreting `auto.arima()` results
-   - Implement 24-month backtest (g7 split visualization)
-   - Wide prediction intervals (g11 decomposition shows large irregular component)
-
-3. **Model storage**: Save fitted objects as `.rds` in `./data-private/derived/models/`
 
 4. **Performance metrics**: RMSE, MAE, MAPE on 24-month test period
 
 **Longer-Term**:
-- **train-2**: Client type-specific models (separate ARIMA per category)
-- **train-3**: External economic predictors (unemployment, oil prices)
+- **Client type-specific models**: Separate ARIMA per category
+- **External economic predictors**: Unemployment, oil prices
 - **Azure ML Migration**: Refactor for cloud execution with MLflow tracking
 
 ---

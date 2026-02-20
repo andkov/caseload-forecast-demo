@@ -83,6 +83,35 @@ This directory contains two core data manipulation patterns that form the backbo
 - Parquet files (`./data-private/derived/ellis/`)
 - CACHE-manifest.md (comprehensive data dictionary)
 
+### Mint Pattern: Model-Ready Preparation
+
+**Metaphor**: A mint produces coins of exact specification from refined metal — standardized, reproducible artifacts.
+
+**Purpose**: Shape Ellis output into model-ready data slices that all Train lanes consume identically. Codifies EDA-confirmed analytical decisions into reproducible artifacts.
+
+**Core Principles**:
+- **Contract**: Define the data interface between exploration and estimation
+- **Reproducibility**: All slicing and transformation decisions scripted, keyed to `focal_date`
+- **Traceability**: Every decision references an EDA finding (e.g., `[EDA-001] Log transform: TRUE`)
+- **Isolation**: No model fitting; no new data sourcing; no re-running Ellis logic
+
+**Required Operations**:
+1. **Train/test split**: Apply `focal_date` and `backtest_months` from `config.yml`
+2. **Transforms**: Log transform, seasonal period setting (EDA-confirmed)
+3. **ts construction**: Build `ts` objects for train, test, and full series
+4. **xreg matrices**: Construct exogenous regressor matrices for model tiers that need them
+
+**Forbidden**:
+- Model fitting or parameter estimation
+- Downloading or re-sourcing data
+- Business logic beyond what EDA has confirmed
+
+**Output**:
+- Serialized `.rds` artifacts in `./data-private/derived/forge/`
+- `forge_manifest.yml` (YAML data contract: split dates, transforms, row counts, EDA decision log)
+
+**Naming**: `{n}-mint-{target}.R` (e.g., `3-mint-IS.R`)
+
 ---
 
 ## AI Implementation Instructions
@@ -273,15 +302,26 @@ source("./analysis/eda-1/eda-1.R")  # consumes Ellis output
 
 ## Quick Reference
 
-| Aspect | Ferry | Ellis |
-|--------|-------|-------|
-| **Purpose** | Transport raw data | Transform to analysis-ready |
-| **Input** | WAREHOUSE, APIs, files | CACHE staging, raw files |
-| **Output** | CACHE staging, parquet backup | CACHE project schema, parquet, CACHE-manifest |
-| **Transformations** | Technical only | Semantic + analytical |
-| **Documentation** | Transport log | Complete data dictionary |
-| **Quality Focus** | Transmission integrity | Data content quality |
-| **Naming** | `{n}-ferry-{domain}.R` | `{n}-ellis-{domain}.R` |
+| Aspect | Ferry | Ellis | Mint |
+|--------|-------|-------|------|
+| **Purpose** | Transport raw data | Transform to analysis-ready | Shape into model-ready slices |
+| **Input** | WAREHOUSE, APIs, files | CACHE staging, raw files | Ellis parquet + EDA decisions |
+| **Output** | CACHE staging, parquet backup | CACHE project schema, parquet, CACHE-manifest | `.rds` artifacts + `forge_manifest.yml` |
+| **Transformations** | Technical only | Semantic + analytical | Temporal splitting + feature construction |
+| **Documentation** | Transport log | Complete data dictionary | Forge manifest (YAML) |
+| **Quality Focus** | Transmission integrity | Data content quality | Contract assertions |
+| **Naming** | `{n}-ferry-{domain}.R` | `{n}-ellis-{domain}.R` | `{n}-mint-{domain}.R` |
+| **Forbidden** | Semantic transforms | Model fitting | Model fitting, new data sourcing |
+
+Additional patterns (Train, Forecast, Report) are documented in `./ai/project/method.md`.
+
+Complete lane naming convention:
+- `{n}-ferry-{source}.R` — data transport
+- `{n}-ellis-{entity}.R` — data transformation
+- `{n}-mint-{target}.R` — model-ready preparation
+- `{n}-train-{model}.R` — model estimation
+- `{n}-forecast-{target}.R` — prediction generation
+- `{n}-report-{target}.qmd` — deliverable assembly
 
 ---
 

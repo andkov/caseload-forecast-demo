@@ -1,5 +1,13 @@
 default:
-  project_name: "quick-start-template"
+  project_name: "caseload-forecast-demo"
+  
+  # Forecasting Configuration
+  focal_date: "2025-09-01"          # Last month with observed data
+  backtest_months: 24                # Held-out window for backtesting
+  use_log_transform: true            # EDA-confirmed: variance stabilization
+  seasonal_period: 12                # Monthly data, annual cycle
+  forecast_horizon: 24               # Months ahead from focal_date
+  random_seed: 42                    # Reproducibility seed
   
   # AI Support Configuration
   ai_support:
@@ -30,6 +38,8 @@ default:
     analysis: "./analysis/"
     derived: "./data-private/derived/"
     raw: "./data-private/raw/"
+    forge: "./data-private/derived/forge/"    # Mint output: model-ready data slices
+    models: "./data-private/derived/models/"  # Train output: fitted model objects
 
   # Flow execution logging (organized by year/month for easy archiving)
   path_log_flow: !expr strftime(Sys.time(), "data-private/logs/%Y/%Y-%m/flow-%Y-%m-%d--%H-%M-%S.log")

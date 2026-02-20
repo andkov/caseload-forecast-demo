@@ -322,6 +322,57 @@
 				"analysis/eda-2/eda-2.qmd"
 			],
 			"group": "build"
+		},
+		{
+			"label": "Run Mint Lane 3",
+			"detail": "Execute mint lane 3 to prepare model-ready data slices from Ellis output",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"manipulation/3-mint-IS.R"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Train Lane 4",
+			"detail": "Execute train lane 4 to estimate model tiers on Mint artifacts",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"manipulation/4-train-IS.R"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Forecast Lane 5",
+			"detail": "Execute forecast lane 5 to generate 24-month horizon predictions",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"manipulation/5-forecast-IS.R"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
 		}
 	]
 }

@@ -356,7 +356,10 @@ Dimensions:
 Follow pattern conventions:
 - **Ferry lanes**: `{N}-ferry-{source}.R` (e.g., `3-ferry-LMTA.R`)
 - **Ellis lanes**: `{N}-ellis-{entity}.R` (e.g., `4-ellis-customer.R`)
-- **Analysis scripts**: `{N}-{purpose}.R` (e.g., `5-train-models.R`)
+- **Mint lanes**: `{N}-mint-{target}.R` (e.g., `3-mint-IS.R`)
+- **Train lanes**: `{N}-train-{model}.R` (e.g., `4-train-IS.R`)
+- **Forecast lanes**: `{N}-forecast-{target}.R` (e.g., `5-forecast-IS.R`)
+- **Report lanes**: `{N}-report-{target}.qmd` (e.g., `6-report-IS.qmd`)
 
 ### Step 2: Add to `flow.R`
 
@@ -366,15 +369,23 @@ Edit the `ds_rail` tibble:
 ds_rail  <- tibble::tribble(
   ~fx         , ~path,
   
-  # Existing scripts
+  # PHASE 1: FERRY
   "run_r"     , "manipulation/1-ferry.R",
   
-  # Add your new script
+  # PHASE 2: ELLIS
   "run_r"     , "manipulation/2-ellis.R",              # NEW
-  "run_r"     , "manipulation/5-train-models.R",       # NEW
   
-  # Existing reports
-  "run_qmd"   , "analysis/eda-1/eda-1.qmd",
+  # PHASE 3: MINT
+  "run_r"     , "manipulation/3-mint-IS.R",            # NEW
+  
+  # PHASE 4: TRAIN
+  "run_r"     , "manipulation/4-train-IS.R",           # NEW
+  
+  # PHASE 5: FORECAST
+  "run_r"     , "manipulation/5-forecast-IS.R",        # NEW
+  
+  # PHASE 6: REPORT
+  "run_qmd"   , "analysis/report-1/report-1.qmd",      # NEW
 )
 ```
 
@@ -440,7 +451,7 @@ Rscript flow.R
 ## Visual Pipeline Summary
 
 ```
-Complete Pipeline Flow (Current State)
+Complete Pipeline Flow (6-Pattern Structure)
 ═════════════════════════════════════════════════════════════════
 
 SETUP PHASE (Non-Flow, Run Once):
@@ -453,38 +464,78 @@ SETUP PHASE (Non-Flow, Run Once):
                    ▼
 FLOW PHASE (Reproducible, Run ./flow.R):
 ┌────────────────────────────────────────────┐
-│  1-ferry.R                                 │
+│  1. FERRY: 1-ferry.R                       │
 │  ↓                                         │
 │  Load: URL | CSV | SQLite | SQL Server     │
 │  Validate: Source identity                 │
-│  Output: ./data-private/derived/           │
-│          open-data-is-1.sqlite             │
+│  Output: open-data-is-1.sqlite             │
 └──────────────────┬─────────────────────────┘
                    │
                    ▼
 ┌────────────────────────────────────────────┐
-│  2-ellis.R (PLANNED)                       │
+│  2. ELLIS: 2-ellis.R                       │
 │  ↓                                         │
 │  Transform: Parse dates, clean values      │
 │  Create: Derived features                  │
-│  Output: Analysis-ready dataset            │
+│  Output: Analysis-ready + CACHE-manifest   │
+└──────────────────┬─────────────────────────┘
+                   │
+          ┌───────┴───────┐
+          │  EDA (advisory) │  analysis/eda-2/eda-2.qmd
+          │  Not in flow.R  │  Informs Mint decisions
+          └───────┬───────┘
+                   │ (analyst judgment)
+                   ▼
+┌────────────────────────────────────────────┐
+│  3. MINT: 3-mint-IS.R                      │
+│  ↓                                         │
+│  Apply: train/test split, log transform    │
+│  Build: ts objects, xreg matrices           │
+│  Output: forge/ dir + forge_manifest.yml   │
 └──────────────────┬─────────────────────────┘
                    │
                    ▼
 ┌────────────────────────────────────────────┐
-│  analysis/eda-1/eda-1.qmd                  │
+│  4. TRAIN: 4-train-IS.R                    │
 │  ↓                                         │
-│  Explore: Trends, seasonality, breaks      │
-│  Output: HTML report with visualizations   │
-└────────────────────────────────────────────┘
+│  Estimate: Naive, ARIMA, ARIMA+xreg       │
+│  Backtest: 24-month held-out window        │
+│  Output: models/ dir + model_registry.csv  │
+└──────────────────┬─────────────────────────┘
                    │
                    ▼
 ┌────────────────────────────────────────────┐
-│  Future: Model training, forecasting       │
-│  • 5-train-models.R                        │
-│  • analysis/forecast-1/forecast-1.qmd      │
+│  5. FORECAST: 5-forecast-IS.R              │
+│  ↓                                         │
+│  Generate: 24-month point + intervals      │
+│  Compare: All tiers side-by-side            │
+│  Output: CSV + Quarto report               │
+└──────────────────┬─────────────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────────────┐
+│  6. REPORT: 6-report-IS.qmd                │
+│  ↓                                         │
+│  Combine: EDA + performance + forecasts    │
+│  Output: Static HTML for stakeholders      │
 └────────────────────────────────────────────┘
 ```
+
+Mint-Train-Forecast form a versioned lineage keyed by `focal_date`.
+See `./ai/project/method.md` for the Mint-Train-Forecast Lineage section.
+
+---
+
+## Lane Naming Convention (All 6 Patterns)
+
+| Pattern | Naming | Example |
+|---------|--------|---------|
+| Ferry | `{n}-ferry-{source}.R` | `1-ferry.R`, `1-ferry-IS.R` |
+| Ellis | `{n}-ellis-{entity}.R` | `2-ellis.R`, `2-ellis-IS.R` |
+| Mint | `{n}-mint-{target}.R` | `3-mint-IS.R` |
+| Train | `{n}-train-{model}.R` | `4-train-IS.R` |
+| Forecast | `{n}-forecast-{target}.R` | `5-forecast-IS.R` |
+| Report | `{n}-report-{target}.qmd` | `6-report-IS.qmd` |
 
 ---
 
@@ -517,7 +568,7 @@ FLOW PHASE (Reproducible, Run ./flow.R):
 **Last Pipeline Execution**: 2025-02-18  
 **Scripts in Flow**: 2 (1 R script, 1 Quarto report)  
 **Scripts Documented**: 3 non-flow, 1 flow  
-**Next Addition**: `2-ellis.R` (ellis lane for transforming raw ferry output)
+**Next Addition**: `3-mint-IS.R` (mint lane for preparing model-ready data slices from Ellis output)
 
 **Update Frequency**: Update this document when:
 - Adding new scripts to `flow.R`

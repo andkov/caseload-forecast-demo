@@ -98,6 +98,8 @@ Follow these examples for ETL script architecture:
 - `./manipulation/example/ferry-lane-example.R` - Data transport pattern
 - `./manipulation/example/ellis-lane-example.R` - Data transformation pattern
 
+Refer to the 6-pattern pipeline structure (Ferry → Ellis → Mint → Train → Forecast → Report) documented in `./ai/project/method.md`. EDA is advisory and informs Mint but is not a numbered lane.
+
 ### Exploratory Analysis & Reporting
 Follow these guides for data exploration and quality assessment:
 - `./analysis/eda-1/eda-1.R` - Analysis script structure

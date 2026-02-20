@@ -122,7 +122,7 @@ ds_rail  <- tibble::tribble(
   ~fx         , ~path,
 
   # ===============================
-  # PHASE 1: DATA IMPORT & PREPARATION  
+  # PHASE 1: FERRY (Data Import)  
   # ===============================
   
   # Example: 
@@ -134,25 +134,34 @@ ds_rail  <- tibble::tribble(
   
   # specific to the caseload-forecast-demo repository
    "run_r"     , "manipulation/1-ferry.R",              # Imports from sources and creates the initial staging db 
+
+  # ===============================
+  # PHASE 2: ELLIS (Data Transformation)
+  # ===============================
+  
    "run_r"     , "manipulation/2-ellis.R",              # Transforms raw data into 6 tidy analysis-ready tables
 
+  # ===============================
+  # PHASE 3: MINT (Model-Ready Preparation)
+  # ===============================
+  # Mint lanes consume Ellis output + EDA-confirmed decisions
+  # to produce serialized ts/xreg objects for Train lanes.
+  # EDA scripts (analysis/eda-*) are advisory and run outside the flow.
+  #"run_r"     , "manipulation/3-mint-IS.R",            # Prepare model-ready data slices for IS forecasting
 
   # ===============================
-  # PHASE 2: ANALYSIS SCRIPTS
+  # PHASE 4: TRAIN (Model Estimation)
   # ===============================
-  
-  # Example: 
-  # Core analysis scripts that depend on the manipulated data
-  #"run_r"     , "analysis/eda-1/eda-1.R",              # Main exploratory data analysis script (save as example)
-  #"run_r"     , "analysis/Data-visualization/Data-visual.R",  # Data visualization script
-  # "run_r"     , "analysis/report-example-2/1-scribe.R", # Scribe script for analysis-ready data
-  
-  # specific to the caseload-forecast-demo repository
-  #"run_r"     , "analysis/eda-2/eda-2.R",              # Basic overview of the data
-  #"run_r"     , "analysis/eda-3/eda-3.R",              # Exploring for forecasting 
+  # Train lanes consume Mint artifacts only (never Ellis output directly).
+  #"run_r"     , "manipulation/4-train-IS.R",           # Estimate model tiers (naive, ARIMA, ARIMA+xreg)
 
   # ===============================
-  # PHASE 3: REPORTS & DOCUMENTATION
+  # PHASE 5: FORECAST (Prediction)
+  # ===============================
+  #"run_r"     , "manipulation/5-forecast-IS.R",        # Generate 24-month horizon forecasts
+
+  # ===============================
+  # PHASE 6: REPORT (Deliverables)
   # ===============================
   
   # Primary analysis reports (Quarto format) - WITH IMPROVED ERROR HANDLING

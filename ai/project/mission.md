@@ -6,7 +6,7 @@ The repo prioritizes **simplicity over realism**: model complexity is deliberate
 
 ## Objectives
 
-- **Establish end-to-end on-prem pipeline**: Ferry → Ellis → EDA → Train → Forecast → Static HTML reports (monthly refresh cadence)
+- **Establish end-to-end on-prem pipeline**: Ferry → Ellis → Mint → Train → Forecast → Report (EDA informs Mint but is not a sequential gate; monthly refresh cadence)
 - **Demonstrate Azure ML migration path**: Understand compute instances, model registry, MLflow, endpoint serving, and orchestration for SDA use cases
 - **Enable SDA analyst fluency**: Andriy Koval (solid R/stats background, new to cloud) gains hands-on experience with Azure ML concepts and terminology
 - **Inform cloud adoption strategy**: Clarify where cloud compute is indispensable (e.g., large-scale estimation) vs. where on-prem suffices
@@ -14,7 +14,7 @@ The repo prioritizes **simplicity over realism**: model complexity is deliberate
 
 ## Success Metrics
 
-- **Pipeline completeness**: Ferry, Ellis, EDA, Train, Forecast scripts all execute without manual intervention
+- **Pipeline completeness**: Ferry, Ellis, Mint, Train, Forecast, Report scripts all execute without manual intervention
 - **Reproducibility**: Re-running the pipeline with same data produces identical forecasts (deterministic seeds, versioned dependencies)
 - **Azure readiness**: Project structure and code patterns align with Azure ML pipeline requirements (even if not yet deployed)
 - **Report delivery**: Static HTML renders successfully, displays 24-month horizon forecasts with model performance diagnostics
