@@ -168,14 +168,14 @@ Distinguishes clients by **employment readiness and program type**, capturing sh
 | `etw_working`               | Numeric | Expected to Work: Currently employed                |
 | `etw_available_for_work`    | Numeric | Expected to Work: Available and seeking work        |
 | `etw_unavailable_for_work`  | Numeric | Expected to Work: Temporarily unable (illness, etc.)|
-| `bfe`                       | Numeric | Barrier-Free Employment: Significant barriers       |
+| `bfe`                       | Numeric | Barriers to Full Employment: Significant barriers       |
 
 ### Category Definitions
 
 - **ETW: Working** – Clients employed but earnings insufficient for self-sufficiency (income supplementation)
 - **ETW: Available for Work** – Clients actively seeking employment, job-ready
 - **ETW: Unavailable for Work** – Clients temporarily unable to work (caregiving, short-term illness, training)
-- **Barrier-Free Employment** – Clients with significant barriers to employment (disabilities, chronic health conditions, complex life circumstances requiring longer-term support)
+- **Barriers to Full Employment** – Clients with significant barriers to employment (disabilities, chronic health conditions, complex life circumstances requiring longer-term support)
 
 ### Usage Notes
 - **Policy context**: "Expected to Work" (ETW) classification introduced April 2012 as part of Alberta Works reform
