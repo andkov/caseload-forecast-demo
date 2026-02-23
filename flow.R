@@ -163,7 +163,10 @@ ds_rail  <- tibble::tribble(
   # ===============================
   # PHASE 6: REPORT (Deliverables)
   # ===============================
-  
+
+  # Lane 6 — Report: Forecast summary, model comparison, backtest evidence
+   "run_qmd"   , "analysis/report-1/report-1.qmd",       # IS caseload forecast report (Lanes 3-5 → HTML)
+
   # Primary analysis reports (Quarto format) - WITH IMPROVED ERROR HANDLING
   # "run_qmd"   , "analysis/eda-1/eda-1.qmd",            # Main exploratory data analysis report
   #"run_qmd"   , "analysis/Data-visualization/Data-visual.qmd", # Data visualization report

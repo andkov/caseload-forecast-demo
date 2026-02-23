@@ -6,6 +6,16 @@ Human decisions and reasoning. AI copilots are prohibited to edit this file.
 
 # 2026-02-23
 
+
+## 6-report
+
+Grapher, compose ./analysis/report-1/ report that would provide a reporting layer to the  lane 6 report as described in the method.md. Make sure the report references fore_manifest and model_registry and has a thorough knowledge of lane 3-mint, 4-train, and 5-forecast. Use eda-2 as a stylistic manuals (but also chekc /eda-1/eda-style-guide.md for more context if needed). Compose .R and .qmd that generate a hmtl document that reports on estimated models and is structured as inverted pyramid. The reader of the document must walk away with understanding what forecasting models exist (in this case only two, but we will be adding as we go further), how their forecast differs, and what uncovered evidence could be helpful in articulating a strategy for predicting the future with implication the policy. 
+
+
+## test-ellis-cache
+
+The script ./manipulation/2-test-ellis-cache.R should be renamed into ./manipulation/nonflow/test-ellis-cache.R, because while it has a distinct spot in the pipeline sequence (between lanes 2 and 3), it works as a support script (providing deterministic language to the agentic implementation of the testing). Rename and ensure that other places where it is referenced in the codebase are adjusted accordingling. (e.g. tasks, scripts, docs)
+
 ## 5-forecast
 
 Data Engineer, compose 5-forecast-IS.R script that would implement lane 5 and create forecasting artefacts, according the method.md. Focus on the first two model teir only. Study commit 8a11f22220ca4dc63b624d5db24b34a87a726841 to inform your model hand-off. Anticipate the needs of the  lane 6 Report to create various reproducible documents from results of the mint-train-forecast processes.  Create a brief entry into memory-ai and a detailed account into the memory/log/. These documens should be useful to agents who will consume the products of the  lane 5 forecast. 

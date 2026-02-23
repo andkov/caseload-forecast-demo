@@ -1,0 +1,477 @@
+---
+title: "Alberta Income Support: Caseload Forecast Report"
+subtitle: "24-Month Forward Projections — October 2025 to September 2027"
+author: "Strategic Data Analytics Team"
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-location: right
+    code-fold: show
+    theme: yeti
+    highlight-style: breeze
+    code-line-numbers: true
+    self-contained: true
+    embed-resources: true
+    keep-md: false
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# Executive Summary
+
+Alberta's Income Support caseload is projected on a modest upward trajectory through September 2027 under the preferred ARIMA model. Uncertainty bands are wide — the 95% prediction interval spans several thousand cases at the 24-month horizon — reflecting genuine model uncertainty in the face of historical structural breaks (2008 recession, 2014 oil price shock, COVID-19). Exact point-forecast numbers are presented in the **Key Forecast Numbers** table.
+
+Two forecasting models are available in this phase: a **Seasonal Naive baseline** (Tier 1) and an **ARIMA model** (Tier 2). The ARIMA model substantially outperforms the naive baseline on every accuracy metric over the 24-month held-out backtest window. Future phases will add Tier 3 (ARIMA with xreg: client-type composition) and Tier 4 (ARIMA with time-varying economic predictors), which are expected to reduce forecast uncertainty.
+
+The analysis pipeline is fully reproducible and versioned. All outputs trace back to a unique `forge_hash` linking the forecast to the exact historical data slice used for model training.
+
+---
+
+```{r}
+#| code-summary: Reconciles working directory between execution modes
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+cat("Working directory: ", getwd())
+library(knitr)
+opts_knit$set(root.dir='../../')
+```
+
+```{r}
+#| label: set_options
+#| code-summary: Report-wide chunk and display options
+#| echo: false
+#| results: hide
+#| message: false
+cat("Working directory: ", getwd())
+report_render_start_time <- Sys.time()
+opts_chunk$set(
+  results      = 'show',
+  message      = FALSE,
+  warning      = FALSE,
+  comment      = NA,
+  tidy         = FALSE,
+  out.width    = "960px",
+  fig.width    = 10,
+  fig.height   = 6,
+  fig.path     = 'figure-png-iso/'
+)
+echo_chunks    <- FALSE
+message_chunks <- FALSE
+options(width = 100)
+ggplot2::theme_set(ggplot2::theme_minimal())
+read_chunk("analysis/report-1/report-1.R")
+```
+
+## The Forecast
+
+The chart below presents the full 20-year historical series together with the 24-month ARIMA projection. The vertical dashed line marks **September 2025**, the latest month with observed data. Everything to the right is a model-generated prediction.
+
+```{r}
+#| label: load-packages
+#| code-summary: Packages used in this report
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: load-sources
+#| code-summary: Custom functions from project scripts
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: declare-globals
+#| code-summary: Paths, config, colour constants
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: declare-functions
+#| code-summary: Local helper functions
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+```
+
+```{r}
+#| label: load-data
+#| code-summary: Load forecast artifacts from Lanes 3–5
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+#| cache: true
+```
+
+```{r}
+#| label: tweak-data-1
+#| code-summary: Parse dates, factor labels, residual columns
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+#| cache: true
+```
+
+```{r}
+#| label: g1-data-prep
+#| code-summary: Bind historical series with ARIMA forward forecast
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+#| cache: true
+```
+
+```{r}
+#| label: g1
+#| code-summary: Hero graph — historical series + 24-month ARIMA projection
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Full historical series (Apr 2005 – Sep 2025, steelblue) with ARIMA 24-month forward projection (blue). Shaded regions: 80% (darker) and 95% (lighter) prediction intervals. Dashed line marks latest observed data point."
+print(g1_forecast_report)
+```
+
+## Key Forecast Numbers
+
+The table below anchors the visual in concrete numbers. Projections are from the **ARIMA (Tier 2)** model at +6, +12, +18, and +24 months from the focal date, with 95% prediction intervals.
+
+```{r}
+#| label: t1
+#| code-summary: Point forecasts and 95% prediction intervals at key horizons
+#| echo: false
+#| code-fold: true
+#| cache: true
+t1_data %>%
+  knitr::kable(
+    caption = paste0(
+      "ARIMA (Tier 2) point forecasts at selected horizons. ",
+      "Change vs Now = change from September 2025 (", fmt_num(current_caseload), " cases)."
+    ),
+    align = c("r", "l", "l", "r", "r", "r", "r", "r")
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+---
+
+# Model Comparison
+
+Two forecasting models are estimated in this phase. They represent opposite ends of the model-complexity spectrum: the **Seasonal Naive** defines the floor of acceptable performance (any useful model must beat it), while **ARIMA** captures temporal autocorrelation and trend dynamics.
+
+## Faceted Forecasts
+
+Each panel below isolates one model at full size, with its own uncertainty envelope. The shared y-axis enables a direct comparison of forecast levels and interval widths.
+
+```{r}
+#| label: g2-data-prep
+#| code-summary: Combine both tiers for comparison plots
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+#| cache: true
+```
+
+```{r}
+#| label: g2
+#| code-summary: Faceted forecast — one panel per model tier
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-height: 8
+#| fig-cap: "Oct 2025 – Sep 2027 projections for each model tier. Tier 1 (coral): repeats last year's monthly pattern with constant level. Tier 2 (blue): ARIMA (3,1,1)(1,0,0)[12] captures trend momentum. ARIMA prediction intervals are systematically narrower because log-transformation stabilises forecast variance."
+print(g2_faceted_forecast)
+```
+
+## Model Divergence
+
+Overlaying the two models on a single panel reveals *how fast* the gap opens as the horizon extends.
+
+```{r}
+#| label: g21
+#| code-summary: Overlaid forecast — divergence between ARIMA and Naive
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-cap: "Both models overlaid. ARIMA (blue) trends upward, driven by the estimated AR(3) autoregression on the log-transformed series. Seasonal Naive (coral) anchors on the most-recent 12-month cycle, producing a flat seasonal pattern. The divergence grows from ~500 cases at +6 months to several thousand at +24 months."
+print(g21_overlaid_forecast)
+```
+
+## Performance Metrics
+
+The table below summarises every available performance metric from the 24-month held-out backtest window (October 2023 – September 2025). **Lower is better for all metrics.**
+
+```{r}
+#| label: t2
+#| code-summary: RMSE, MAE, and MAPE for all model tiers
+#| echo: false
+#| code-fold: true
+#| cache: true
+t2_data %>%
+  knitr::kable(
+    caption = paste0(
+      "Backtest performance (Oct 2023 – Sep 2025, 24 months). ",
+      "RMSE/MAE in absolute caseload; MAPE in percent. ",
+      "All metrics computed on back-transformed (original) scale. ",
+      "ARIMA order shown for Tier 2; AICc not applicable (N/A) for rule-based Tier 1."
+    )
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  ) %>%
+  kableExtra::row_spec(
+    which(t2_data$MAPE == min(t2_data$MAPE)),
+    bold = TRUE, background = "#e8f4f8"
+  )
+```
+
+**Reading the table**: ARIMA reduces MAPE by approximately 3 percentage points relative to the Seasonal Naive — from ~16% to ~13%. In absolute terms, the ARIMA model errs by roughly 700 fewer cases per month on average (MAE difference). This is meaningful for budget planning: 700 cases × average benefit cost = non-trivial fiscal exposure.
+
+---
+
+# Backtest Evidence
+
+This section shows *how* the models performed month-by-month during the held-out period, not just *how well* (as summarised by the metrics above). Month-level diagnostics reveal systematic biases that summary statistics obscure.
+
+> **Important note on "backtest" interpretation**: The fitted values displayed here are *one-step in-sample predictions* from models estimated on the full 246-month series. True multi-step hold-out metrics (RMSE/MAE/MAPE in the performance table) were computed separately in Lane 4 (`4-train-IS.R`) by training on the 222-month training slice and forecasting the final 24 months forward. The two approaches are complementary; this section uses the in-sample diagnostics for visual residual analysis.
+
+## Actual vs Model Fitted
+
+```{r}
+#| label: g3-data-prep
+#| code-summary: Merge backtest comparison data for diagnostic plots
+#| echo: false
+#| results: hide
+#| message: false
+#| code-fold: true
+#| cache: true
+```
+
+```{r}
+#| label: g3
+#| code-summary: Actual vs fitted — 24-month backtest window
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-height: 8
+#| fig-cap: "Black solid line = actual caseload. Coloured dashed line = model-fitted values. Both models track the general level reasonably well; ARIMA tracks month-to-month movements more closely because it learns autocorrelation structure."
+print(g3_actual_vs_fitted)
+```
+
+## Residual Pattern
+
+A well-specified model's residuals should be random — no systematic structure, no persistent sign. Coloured bars below zero indicate months where the model over-predicted (it said caseload would be higher than it was), and bars above zero indicate under-prediction.
+
+```{r}
+#| label: g31
+#| code-summary: Residuals over the backtest window
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-height: 8
+#| fig-cap: "Residual = actual – fitted. Blue bars (positive): model under-predicted caseload. Coral bars (negative): model over-predicted. Seasonal Naive shows a persistent negative bias in later months — it over-predicts because it anchors on the COVID-era rebound year, which was atypically high. ARIMA residuals are more centred around zero."
+print(g31_residuals)
+```
+
+## Percentage Error by Month
+
+Absolute percentage error reveals *proportional* accuracy — months where the model missed by the most relative to actual caseload, regardless of scale.
+
+```{r}
+#| label: g32
+#| code-summary: Absolute percentage error vs MAPE reference line
+#| code-fold: true
+#| eval: true
+#| cache: true
+#| fig-height: 8
+#| fig-cap: "Each point = absolute monthly percentage error. Dashed line = MAPE (mean across 24 months). Points above the dashed line are worse-than-average months. Both models struggle most around fiscal year transitions (Apr–May) and at the beginning of the backtest window (Oct 2023), when the COVID tail effects were still dissipating."
+print(g32_pct_error)
+```
+
+---
+
+# What the Evidence Suggests: Policy Implications
+
+The forecasting results carry several implications for caseload planning and policy:
+
+**1. Upward pressure is real, but modest.** The ARIMA model's central forecast shows a gradual upward trend over the 24-month horizon. This reflects the autoregressive momentum in the series — the recent uptick since 2023 has not reversed and the model projects it to continue at a subdued pace. It does *not* predict a sudden spike.
+
+**2. Prediction intervals are wide — plan for ranges, not point estimates.** The 95% interval at +24 months spans thousands of cases. Budget analysts should prepare high, central, and low scenarios corresponding to the upper bound of the 80% interval, the point forecast, and the lower bound respectively. Relying on a single point forecast for multi-year budget commitments underestimates fiscal risk.
+
+**3. The Seasonal Naive over-predicted during the backtest.** Persistent negative residuals indicate the naive model anchored on the COVID-era caseload rebound year (Oct 2022 – Sep 2023), which was atypically elevated. This systematic bias renders Tier 1 unsuitable as a standalone policy forecast — it is retained only as an accuracy benchmark.
+
+**4. ARIMA does not explain *why* caseload moves.** The current ARIMA specification is univariate — it extrapolates temporal patterns without incorporating economic drivers (unemployment rate, oil price, wage growth, policy changes). This limits its usefulness for scenario analysis. *What happens to caseload if unemployment rises 2 percentage points?* The current models cannot answer this.
+
+**5. The path to narrower uncertainty and richer scenario capability runs through Tiers 3 and 4.** Adding client-type composition as a static regressor (Tier 3) will reduce model error on the demographic dimension. Adding a time-varying economic predictor (Tier 4 — unemployment rate or oil price are natural candidates given Alberta's economic structure) will enable counter-factual scenario analysis essential for strategic planning.
+
+**6. Model retraining cadence matters.** Both models are estimated on data through September 2025. As new monthly data arrives, the models should be re-estimated (rerun Lanes 3–5) to maintain forecast freshness. The pipeline is designed for this: changing `focal_date` in `config.yml` propagates automatically through all downstream lanes.
+
+---
+
+# Model Specifications
+
+Technical specifications for analysts who need to validate or extend the modelling work.
+
+```{r}
+#| label: t3
+#| code-summary: Model registry — specifications and information criteria
+#| echo: false
+#| code-fold: true
+#| cache: true
+t3_data %>%
+  select(-`Forge Hash`) %>%
+  knitr::kable(
+    caption = paste0(
+      "Model specification registry (from model_registry.csv). ",
+      "AIC/AICc/BIC: information criteria — lower values indicate better fit penalised for complexity; ",
+      "not defined for rule-based models (Tier 1). ",
+      "Forge Hash (first 8 chars): links model to its exact Mint data slice."
+    )
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+**Reading the ARIMA order `(3,1,1)(1,0,0)[12]`:**
+
+| Component | Symbol | Value | Meaning |
+|-----------|--------|-------|---------|
+| Non-seasonal AR | p | 3 | Caseload depends on the previous 3 months (after differencing) |
+| Non-seasonal differencing | d | 1 | One regular difference needed to achieve stationarity |
+| Non-seasonal MA | q | 1 | One lagged forecast error in the model |
+| Seasonal AR | P | 1 | One seasonal autoregressive term at lag 12 |
+| Seasonal differencing | D | 0 | No seasonal differencing needed |
+| Seasonal MA | Q | 0 | No seasonal moving average |
+| Seasonality period | [s] | 12 | Monthly data with annual seasonality |
+
+All ARIMA orders were selected automatically by `forecast::auto.arima(stepwise = FALSE, approximation = FALSE)` on the log-transformed series, consistent with EDA decisions [EDA-001] through [EDA-003] codified in Lane 3 (Mint).
+
+---
+
+# Data Lineage and Provenance
+
+Full traceability from raw data to forecast output. Any authorised user can reproduce these results by running the pipeline from `flow.R` with the same `config.yml`.
+
+## Provenance Summary (Manifests)
+
+```{r}
+#| label: inspect-data-0
+#| code-summary: Full provenance dashboard — manifests, lineage check, registry snapshot
+#| code-fold: true
+#| eval: true
+#| cache: true
+```
+
+## Lane 3 (Mint) — Data Contract
+
+The `forge_manifest.yml` records the exact data decisions codified in Lane 3. These decisions derive from EDA-2 diagnostics and are the authoritative record of what went into model training.
+
+```{r}
+#| label: t4
+#| code-summary: forge_manifest.yml contents (Lane 3 data contract)
+#| echo: false
+#| code-fold: true
+#| cache: true
+t4_data %>%
+  knitr::kable(
+    col.names = c("Field", "Value"),
+    caption   = "forge_manifest.yml — The data contract between Lane 3 (Mint) and Lane 4 (Train). forge_hash links every model and forecast back to this exact data slice."
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width        = FALSE
+  ) %>%
+  kableExtra::column_spec(1, bold = TRUE, width = "12em") %>%
+  kableExtra::column_spec(2, width = "28em")
+```
+
+## Lane 5 (Forecast) — Execution Record
+
+```{r}
+#| label: t5
+#| code-summary: forecast_manifest.yml contents (Lane 5 provenance)
+#| echo: false
+#| code-fold: true
+#| cache: true
+t5_data %>%
+  knitr::kable(
+    col.names = c("Field", "Value"),
+    caption   = "forecast_manifest.yml — Execution record for Lane 5 (Forecast). forecast_hash is a content fingerprint of all forecast output files. forge_hash_consumed links back to the Mint artifacts consumed by the Train models."
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width        = FALSE
+  ) %>%
+  kableExtra::column_spec(1, bold = TRUE, width = "12em") %>%
+  kableExtra::column_spec(2, width = "28em")
+```
+
+### Pipeline Execution Order
+
+The full reproducible pipeline runs via `Rscript flow.R` from the project root:
+
+| Lane | Script | Pattern | Role |
+|------|--------|---------|------|
+| 1 | `manipulation/1-ferry.R` | Ferry | Import raw CSV from Open Alberta |
+| 2 | `manipulation/2-ellis.R` | Ellis | Transform to 11 analysis-ready parquet tables |
+| — | `analysis/eda-2/eda-2.qmd` | EDA | Diagnose trends, stationarity, transform decisions |
+| 3 | `manipulation/3-mint-IS.R` | Mint | Train/test split, log transform, xreg matrices |
+| 4 | `manipulation/4-train-IS.R` | Train | Fit Tier 1 (snaive) + Tier 2 (ARIMA) on full series |
+| 5 | `manipulation/5-forecast-IS.R` | Forecast | Generate 24-month projections + backtest diagnostics |
+| **6** | **`analysis/report-1/report-1.qmd`** | **Report** | **This document** |
+
+---
+
+# Environment
+
+> Technical appendix. Non-technical readers are welcome to skip; return here to understand the origins of custom functions, packages, and data objects.
+
+**Packages used** (see `load-packages` chunk sourced via `read_chunk()`): `magrittr`, `ggplot2`, `forcats`, `stringr`, `lubridate`, `dplyr`, `tidyr`, `scales`, `arrow`, `yaml`, `knitr`, `kableExtra`, `forecast`, `fs`.
+
+**Custom functions** sourced from:
+
+- [`scripts/common-functions.R`](../../scripts/common-functions.R) — `neat()`, `quick_save()`, `safe_numeric_convert()`
+- [`scripts/operational-functions.R`](../../scripts/operational-functions.R) — `compute_fiscal_year()`, `month_diff()`, etc.
+
+**Local helpers** defined in `declare-functions`: `format_fiscal_year_label()`, `fmt_pct()`, `fmt_num()`, `make_tier_label()`.
+
+**Config** (`config.yml`): `focal_date = 2025-09-01`, `backtest_months = 24`, `forecast_horizon = 24`, `use_log_transform = true`, `seasonal_period = 12`, `random_seed = 42`.
+
+**Colour constants**: `steelblue` (historical series), `#2166ac` (ARIMA / Tier 2), `#d6604d` (Seasonal Naive / Tier 1), `gray50` (split-date reference line).
+
+All graphing conventions follow [`analysis/eda-1/eda-style-guide.md`](../eda-1/eda-style-guide.md): dual-file pattern (`.R` for development with `ggsave()`, `.qmd` for publication with `print()`), default dimensions 10 × 6 inches at 300 DPI, `theme_minimal()` globally applied.
+
+---
+
+# Session Info
+
+```{r}
+#| label: session-info
+#| code-summary: R session information for reproducibility
+#| echo: false
+#| code-fold: true
+cat("Report completed at:", as.character(Sys.time()), "\n")
+cat("Total runtime:", round(difftime(Sys.time(), report_render_start_time, units = "mins"), 2), "minutes\n")
+sessionInfo()
+```
