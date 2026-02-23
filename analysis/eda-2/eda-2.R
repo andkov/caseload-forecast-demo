@@ -77,6 +77,16 @@ message("Train period: through ", focal_date - months(24))
 message("Test period (backtest): (", focal_date - months(24), " to ", focal_date, "]")
 
 # ---- declare-functions -------------------------------------------------------
+# Force white background on all ggplots in this script
+# (overrides theme_minimal's transparent panel/plot backgrounds)
+theme_minimal <- function(...) {
+  ggplot2::theme_minimal(...) +
+  ggplot2::theme(
+    plot.background  = ggplot2::element_rect(fill = "white", color = NA),
+    panel.background = ggplot2::element_rect(fill = "white", color = NA)
+  )
+}
+
 # Custom function to format fiscal year dates on axis
 format_fiscal_year <- function(date_vec) {
   year <- lubridate::year(date_vec)
@@ -569,7 +579,7 @@ if (adf_test$p.value < 0.05 && kpss_test$p.value > 0.05) {
 # ---- g9 -----------------------------------------------------
 # ACF plot for autocorrelation structure
 g9_acf <- ggplot2::ggplot() + 
-  ggplot2::theme_minimal() +
+  theme_minimal() +
   ggplot2::labs(
     title = "Autocorrelation Function (ACF) - Training Data",
     subtitle = "Identifies MA (moving average) order for ARIMA modeling",
@@ -577,7 +587,7 @@ g9_acf <- ggplot2::ggplot() +
   )
 
 # Generate ACF plot using base plotting then save
-png(paste0(prints_folder, "g9_acf.png"), width = 10, height = 6, units = "in", res = 300)
+png(paste0(prints_folder, "g9_acf.png"), width = 10, height = 6, units = "in", res = 300, bg = "white")
 forecast::Acf(ts_train, main = "ACF: Training Data (April 2005 - Sep 2023)", 
               lag.max = 36, col = "steelblue", lwd = 2)
 dev.off()
@@ -588,7 +598,7 @@ forecast::Acf(ts_train, main = "ACF: Training Data", lag.max = 36)
 # ---- g10 ----------------------------------------------------
 # PACF plot for partial autocorrelation structure  
 g10_pacf <- ggplot2::ggplot() + 
-  ggplot2::theme_minimal() +
+  theme_minimal() +
   ggplot2::labs(
     title = "Partial Autocorrelation Function (PACF) - Training Data",
     subtitle = "Identifies AR (autoregressive) order for ARIMA modeling",
@@ -596,7 +606,7 @@ g10_pacf <- ggplot2::ggplot() +
   )
 
 # Generate PACF plot using base plotting then save
-png(paste0(prints_folder, "g10_pacf.png"), width = 10, height = 6, units = "in", res = 300)
+png(paste0(prints_folder, "g10_pacf.png"), width = 10, height = 6, units = "in", res = 300, bg = "white")
 forecast::Pacf(ts_train, main = "PACF: Training Data (April 2005 - Sep 2023)", 
                lag.max = 36, col = "firebrick", lwd = 2)
 dev.off()
