@@ -87,12 +87,12 @@ The final deliverable: **24-month forward projections** for Alberta Income Suppo
 Includes executive summary, hero forecast chart, model comparison (Seasonal Naïve vs ARIMA), backtest validation against a held-out 24-month window, policy implications, and full data provenance.
 
 <p align="center">
-  <img src="analysis/report-1/figure-png-iso/g1-1.png" alt="24-month ARIMA forecast with prediction intervals" width="85%"/>
+  <img src="libs/images/README-main/report1-forecast-arima-hero.png" alt="24-month ARIMA forecast with prediction intervals" width="85%"/>
   <br/><sub>20-year history + 24-month ARIMA projection with 80%/95% prediction intervals</sub>
 </p>
 
 <p align="center">
-  <img src="analysis/report-1/figure-png-iso/g3-1.png" alt="Backtest: actual vs fitted" width="85%"/>
+  <img src="libs/images/README-main/report1-backtest-actual-vs-fitted.png" alt="Backtest: actual vs fitted" width="85%"/>
   <br/><sub>Backtest evidence — actual vs. fitted on held-out 24-month window</sub>
 </p>
 
@@ -105,17 +105,17 @@ The EDA report ([`eda-2.qmd`](analysis/eda-2/)) runs outside the pipeline as an 
 **Coverage**: 20-year trends · client type composition · 7 historical periods (2008 crisis, oil collapse, COVID-19, recovery) · year-over-year seasonality · growth rates · stationarity tests (ADF, KPSS) · ACF/PACF for ARIMA order selection · STL decomposition · log transform assessment.
 
 <p align="center">
-  <img src="analysis/eda-2/prints/g1_total_caseload_ts.png" alt="Total caseload 20-year time series" width="85%"/>
+  <img src="libs/images/README-main/eda2-total-caseload-ts.png" alt="Total caseload 20-year time series" width="85%"/>
   <br/><sub>Total caseload — 20 years of monthly Income Support data annotated with historical periods</sub>
 </p>
 
 <p align="center">
-  <img src="analysis/eda-2/prints/g7_train_test_split.png" alt="Train/test split" width="85%"/>
+  <img src="libs/images/README-main/eda2-train-test-split.png" alt="Train/test split" width="85%"/>
   <br/><sub>Train/test partition used for backtest evaluation</sub>
 </p>
 
 <p align="center">
-  <img src="analysis/eda-2/prints/g11_stl_decomp.png" alt="STL decomposition" width="85%"/>
+  <img src="libs/images/README-main/eda2-stl-decomp.png" alt="STL decomposition" width="85%"/>
   <br/><sub>STL seasonal decomposition — trend, seasonal, and remainder components</sub>
 </p>
 
