@@ -5,6 +5,7 @@ This project follows a **ferry-ellis-mint-train-forecast-report** pipeline adapt
 ## Data Source
 
 **Alberta Income Support Aggregated Caseload Data**  
+
 - **Public URL**: [Open Alberta - Income Support](https://open.alberta.ca/dataset/e1ec585f-3f52-40f2-a022-5a38ea3397e5/resource/4f97a3ae-1b3a-48e9-a96f-f65c58526e07/download/is-aggregated-data-april-2005-sep-2025.csv)  
 - **Temporal coverage**: April 2005 to present (updated monthly by GoA)  
 - **Structure**: Monthly aggregates by geography, measure type (caseload, intakes, exits), and demographics  
@@ -22,14 +23,15 @@ This project follows a **ferry-ellis-mint-train-forecast-report** pipeline adapt
 | 5 | **Forecast** | Prediction  | Train `.rds` + Mint full slice | Forecast CSV + Quarto report            | Refitting models                   |
 | 6 | **Report**   | Delivery    | EDA + Train metrics + Forecast | Static HTML                             | New data transformations           |
 
-
 ### 1. Ferry Pattern (Data Ingestion)
+
 - **Input**: CSV from Open Alberta URL or local cache (`./data-private/raw/`)
 - **Process**: Download if missing, validate schema, minimal SQL-like filtering (no semantic transforms)
 - **Output**: Staging data in `./data-raw/derived/` (parquet + CACHE DB if using DuckDB)
 - **Validation**: Row counts, date range checks, missing value inventory
 
 ### 2. Ellis Pattern (Data Transformation)
+
 - **Input**: Ferry output (raw monthly aggregates)
 - **Process**:
   - Standardize column names (`janitor::clean_names`)
@@ -41,7 +43,9 @@ This project follows a **ferry-ellis-mint-train-forecast-report** pipeline adapt
 - **Quality checks**: No missing dates in series, monotonic time index, documented factor levels
 
 ### EDA (Exploratory Data Analysis) — Advisory, Not a Numbered Lane
+
 EDA operates on Ellis output and produces analytical insight (reports, visualizations, stationarity tests) — not data artifacts consumed by downstream scripts. EDA findings are codified as documented decisions in Mint scripts.
+
 - **Objectives**: Visualize trends, seasonality, structural breaks; diagnose stationarity
 - **Key outputs**:
   - Time series plot (2010-present for context, fiscal year overlays)
@@ -52,6 +56,7 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
 - **Relationship to Mint**: EDA decisions are logged and referenced in Mint scripts (e.g., `[EDA-001] Log transform: TRUE — confirmed by eda-2 g12`)
 
 ### 3. Mint Pattern (Model-Ready Preparation)
+
 - **Input**: Ellis parquet output + EDA-confirmed analytical decisions
 - **Process**:
   - Apply train/test split keyed to `focal_date` and `backtest_months` from `config.yml`
@@ -66,6 +71,7 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
 - **Forbidden**: Model fitting, new data sourcing, re-running Ellis logic
 
 ### 4. Train Pattern (Model Estimation)
+
 - **Input**: Mint artifacts only (`ds_*.parquet`, `xreg_*.parquet`, `forge_manifest.yml`) — never Ellis output directly
   - Reconstruct `ts` objects: `ts(ds_train$y, start=c(year(min(date)), month(min(date))), frequency=12)`
 - **Train/test split**: Defined by Mint; uses all data through `focal_date - 24 months` for training; holds out last 24 months for backtesting
@@ -78,6 +84,7 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
 - **Performance metrics**: RMSE, MAE, MAPE on held-out 24-month backtesting window
 
 ### 5. Forecast Pattern Pattern (Prediction)
+
 - **Input**: Train model `.rds` + Mint `ds_full.parquet` for forward projection (reconstruct `ts_full` on load)
 - **Horizon**: 24 months ahead from `focal_date`
 - **Outputs**:
@@ -86,6 +93,7 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
 - **Format**: CSV + Quarto report (`analysis/forecast-1/forecast-1.qmd`)
 
 ### 6. Report Pattern (Deliverables)
+
 - **Deliverable**: Static HTML combining EDA + model performance + 24-month forecast visualization
 - **Interactivity**: Optional Plotly/htmlwidgets for hover details (keep simple; avoid heavy JS dependencies)
 - **Delivery**: Manual publish to SharePoint/network drive (Phase 1); Azure Static Web App + AAD auth (Phase 2)
@@ -111,6 +119,7 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
 ## Mint-Train-Forecast Lineage
 
 The Mint, Train, and Forecast patterns form a versioned chain keyed by `focal_date`:
+
 - **Mint** produces `forge_manifest.yml` with split boundaries, transform flags, and row counts
 - **Train** records `forge_hash` in the model registry CSV, linking each fitted model to its exact input data slice
 - **Forecast** inherits lineage through the model object it consumes
