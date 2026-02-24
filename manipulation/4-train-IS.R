@@ -42,7 +42,7 @@
 #'             monthly data with clear fiscal year seasonality.
 #'   Tier 2 (ARIMA): auto.arima() on log-transformed series (y column). Auto-
 #'             selects (p,d,q)(P,D,Q)[12] orders; EDA-002 expects d=1.
-#'   Tier 3 (ARIMA + static xreg): Not implemented in this lane (deferred).
+#'   Tier 3 (Subgroup disaggregation): Not implemented in this lane (deferred).
 #'   Tier 4 (ARIMA + dynamic xreg): Not implemented — xreg_dynamic placeholder
 #'             is 0-row in current Mint artifacts.
 #'
@@ -461,7 +461,7 @@ cat("\n  Tiers implemented:\n")
 cat("    Tier 1: snaive()    — seasonal naive baseline\n")
 cat("    Tier 2: auto.arima() —", arima_full_order_str, "\n\n")
 cat("  Deferred tiers (available in forge, not yet implemented):\n")
-cat("    Tier 3: auto.arima(xreg = xreg_train) — client type proportions\n")
+cat("    Tier 3: subgroup disaggregation — per-client-type ARIMA, then sum\n")
 cat("    Tier 4: auto.arima(xreg = xreg_dynamic) — placeholder, 0-row in forge\n")
 
 cat("\n  Ready for Forecast lane (5-forecast-IS.R)\n")

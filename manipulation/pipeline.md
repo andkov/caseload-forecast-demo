@@ -513,7 +513,7 @@ Codify every analytical decision made during EDA into a versioned, reproducible 
 | Source | File | Description |
 |:-------|:-----|:------------|
 | Ellis output | `open-data-is-2-tables/total_caseload.parquet` | 246-month full series |
-| Ellis output | `open-data-is-2-tables/client_type_wide.parquet` | Client-type composition fractions (xreg Tier 3) |
+| Ellis output | `open-data-is-2-tables/client_type_wide.parquet` | Client-type composition fractions (Tier 3 subgroup disaggregation) |
 | Config | `config.yml` | `focal_date`, `backtest_months`, transform flags |
 
 #### Output
@@ -525,10 +525,10 @@ All artifacts written to `./data-private/derived/forge/`:
 | `ds_train.parquet` | Train slice: Apr 2005 – Sep 2023 (222 months) — `date`, `year`, `month`, `caseload`, `y` |
 | `ds_test.parquet` | Test slice: Oct 2023 – Sep 2025 (24 months) |
 | `ds_full.parquet` | Full 246-month series (train + test combined) |
-| `xreg_train.parquet` | Static exogenous regressors, train slice (client-type proportions) |
-| `xreg_test.parquet` | Static exogenous regressors, test slice |
-| `xreg_full.parquet` | Static exogenous regressors, full series |
-| `xreg_future.parquet` | Static exogenous regressors, 24-month forecast horizon |
+| `xreg_train.parquet` | Client-type proportions, train slice (Tier 3 subgroup context) |
+| `xreg_test.parquet` | Client-type proportions, test slice |
+| `xreg_full.parquet` | Client-type proportions, full series |
+| `xreg_future.parquet` | Client-type proportions, 24-month forecast horizon |
 | `xreg_dynamic_*.parquet` | Tier 4 placeholder — 0-row schema (dynamic xreg not yet implemented) |
 | `forge_manifest.yml` | Data contract: `focal_date`, `forge_hash`, transform flags, artifact inventory |
 
@@ -544,7 +544,7 @@ ts(ds_train$y, start = c(year(min(ds_train$date)), month(min(ds_train$date))), f
 |:-----|:------|:----------------------------------|
 | Tier 1 | Seasonal Naïve | `ds_train`, `ds_test` |
 | Tier 2 | ARIMA | `ds_train`, `ds_test`, `ds_full` |
-| Tier 3 | ARIMA + static xreg | same + `xreg_train`, `xreg_test`, `xreg_full`, `xreg_future` |
+| Tier 3 | Subgroup disaggregation | Per-client-type series from `client_type_wide` + xreg context |
 | Tier 4 | ARIMA + dynamic xreg | same + `xreg_dynamic_*` (0-row placeholder — skipped) |
 
 #### Lineage Mechanism
@@ -597,7 +597,7 @@ All artifacts written to `./data-private/derived/models/`:
 |:-----|:----------|:------------|
 | **Tier 1** | `forecast::snaive()` | Seasonal Naïve — repeats the prior year's monthly pattern. Defines the performance floor: any useful model must outperform it. |
 | **Tier 2** | `forecast::auto.arima()` | ARIMA on `y = log(caseload)`. Auto-selects `(p,d,q)(P,D,Q)[12]`. EDA-002 predicts `d = 1`. Fitted on `ts_full`; backtest evaluated on `ts_test`. |
-| Tier 3 | ARIMA + static xreg | Deferred — `xreg_*` matrices present in `forge/` but not yet consumed |
+| Tier 3 | Subgroup disaggregation | Deferred — `xreg_*` matrices present in `forge/` but not yet consumed |
 | Tier 4 | ARIMA + dynamic xreg | Deferred — 0-row placeholder; skipped automatically |
 
 **Back-transform**: All metrics (RMSE, MAE, MAPE) are computed on the original caseload scale via `exp(forecast)` for human interpretability.

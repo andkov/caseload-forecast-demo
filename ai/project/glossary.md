@@ -155,7 +155,7 @@ Retrospective evaluation of forecast accuracy by pretending past data points are
 Classification of forecasting models by complexity:
 1. **Naive baseline**: Simple benchmark (last value carried forward)
 2. **ARIMA**: Autoregressive integrated moving average (univariate time series model)
-3. **ARIMA + static predictor**: Includes time-invariant exogenous variable (e.g., client type)
+3. **Subgroup disaggregation**: Fit the same model independently for each client-type caseload series, then sum. Tests whether bottom-up forecasting outperforms aggregate-level modeling. Client type classifies the social service (ETW, BFE, AISH, etc.) — individuals may transition between types, but each subgroup's caseload has its own dynamics.
 4. **ARIMA + time-varying predictor**: Includes dynamic covariate (e.g., economic indicator)
 
 ### Prediction Interval

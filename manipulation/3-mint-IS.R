@@ -21,10 +21,10 @@
 #'   - ds_train.parquet          : Data frame slice, train  (Tiers 1-4 reconstruct ts from this)
 #'   - ds_test.parquet           : Data frame slice, test   (date, year, month, ..., caseload, y)
 #'   - ds_full.parquet           : Data frame slice, full   (for forward projection)
-#'   - xreg_train.parquet        : Exogenous regressors, train slice  (date + prop_* cols) (Tier 3)
-#'   - xreg_test.parquet         : Exogenous regressors, test slice   (Tier 3)
-#'   - xreg_full.parquet         : Exogenous regressors, full series  (Tier 3)
-#'   - xreg_future.parquet       : Exogenous regressors, forecast horizon (Tier 3)
+#'   - xreg_train.parquet        : Client-type proportions, train slice  (date + prop_* cols) (Tier 3 subgroup context)
+#'   - xreg_test.parquet         : Client-type proportions, test slice   (Tier 3)
+#'   - xreg_full.parquet         : Client-type proportions, full series  (Tier 3)
+#'   - xreg_future.parquet       : Client-type proportions, forecast horizon (Tier 3)
 #'   - xreg_dynamic_train.parquet: Tier 4 placeholder — 0-row schema
 #'   - xreg_dynamic_test.parquet : Tier 4 placeholder — 0-row schema
 #'   - xreg_dynamic_full.parquet : Tier 4 placeholder — 0-row schema
@@ -47,7 +47,7 @@
 #' **Model Tier Consumption** (Train lane loads from forge/ and reconstructs ts):
 #'   Tier 1 (Naive):              ds_train, ds_test  → reconstruct ts_train, ts_test
 #'   Tier 2 (ARIMA):              ds_train, ds_test, ds_full  → ts_train, ts_test, ts_full
-#'   Tier 3 (ARIMA + static):     same + xreg_train, xreg_test, xreg_full, xreg_future
+#'   Tier 3 (Subgroup disaggr.):  per-client-type series from client_type_wide + xreg context
 #'   Tier 4 (ARIMA + dynamic):    same + xreg_dynamic_* (0-row placeholder — skip if empty)
 #'
 #' ============================================================================
@@ -124,7 +124,7 @@ checkmate::assert_file_exists(path_total, extension = "parquet")
 ds_total <- arrow::read_parquet(path_total)
 cat("\n  Total caseload loaded:", nrow(ds_total), "rows,", ncol(ds_total), "columns\n")
 
-# -- 1b. Client type wide (for Tier 3 static predictor) --
+# -- 1b. Client type wide (for Tier 3 subgroup disaggregation) --
 checkmate::assert_file_exists(path_client, extension = "parquet")
 ds_client <- arrow::read_parquet(path_client)
 cat("  Client type loaded:  ", nrow(ds_client), "rows,", ncol(ds_client), "columns\n")
@@ -294,16 +294,16 @@ cat("  ts_full:  ", length(ts_full), " obs, frequency ",
 cat("  (ts objects are in-memory validation only — persisted as ds_*.parquet)\n")
 
 # ==============================================================================
-# SECTION 5: BUILD EXOGENOUS REGRESSOR MATRICES (Tier 3)
+# SECTION 5: BUILD CLIENT-TYPE PROPORTION MATRICES (Tier 3 subgroup context)
 # ==============================================================================
 
 # ---- build-xreg-static ------------------------------------------------------
 cat("\n", strrep("=", 70), "\n")
-cat("SECTION 5: EXOGENOUS REGRESSOR MATRICES (Tier 3)\n")
+cat("SECTION 5: CLIENT-TYPE PROPORTION MATRICES (Tier 3 subgroup context)\n")
 cat(strrep("=", 70), "\n")
 
-# Tier 3: ARIMA + static predictor
-# Use client_type proportions as slowly-varying exogenous regressors.
+# Tier 3: Subgroup disaggregation
+# Client-type proportions provide context for per-subgroup forecasting.
 # Client type data available Apr 2012 onward (162 months); for months before
 # Apr 2012, we carry back the earliest available proportions.
 
@@ -384,7 +384,7 @@ cat("  xreg_full: ", nrow(xreg_full),  "x", ncol(xreg_full), "\n")
 
 # ---- build-xreg-future ------------------------------------------------------
 # For forecast horizon: carry forward the last known proportions
-# (static predictor assumption: proportions don't change during forecast window)
+# (subgroup assumption: proportions held constant during forecast window)
 last_props <- xreg_full_df %>%
   filter(date == max(date)) %>%
   select(all_of(xreg_cols))
@@ -544,8 +544,8 @@ arrow::write_parquet(ds_train, file.path(dir_forge, "ds_train.parquet"))
 arrow::write_parquet(ds_test,  file.path(dir_forge, "ds_test.parquet"))
 arrow::write_parquet(ds_full,  file.path(dir_forge, "ds_full.parquet"))
 
-# Exogenous regressor tables (Tier 3 — static predictor)
-# Include date column for alignment verification; Train lane strips it before auto.arima()
+# Client-type proportion tables (Tier 3 — subgroup disaggregation context)
+# Include date column for alignment verification; Train lane strips it before fitting
 arrow::write_parquet(
   xreg_train_df[, c("date", xreg_cols)],
   file.path(dir_forge, "xreg_train.parquet")

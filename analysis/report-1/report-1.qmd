@@ -23,7 +23,7 @@ editor_options:
 
 Alberta's Income Support caseload is projected on a modest upward trajectory through September 2027 under the preferred ARIMA model. Uncertainty bands are wide — the 95% prediction interval spans several thousand cases at the 24-month horizon — reflecting genuine model uncertainty in the face of historical structural breaks (2008 recession, 2014 oil price shock, COVID-19). Exact point-forecast numbers are presented in the **Key Forecast Numbers** table.
 
-Two forecasting models are available in this phase: a **Seasonal Naive baseline** (Tier 1) and an **ARIMA model** (Tier 2). The ARIMA model substantially outperforms the naive baseline on every accuracy metric over the 24-month held-out backtest window. Future phases will add Tier 3 (ARIMA with xreg: client-type composition) and Tier 4 (ARIMA with time-varying economic predictors), which are expected to reduce forecast uncertainty.
+Two forecasting models are available in this phase: a **Seasonal Naive baseline** (Tier 1) and an **ARIMA model** (Tier 2). The ARIMA model substantially outperforms the naive baseline on every accuracy metric over the 24-month held-out backtest window. Future phases will add Tier 3 (subgroup disaggregation: per-client-type forecasting, then summed) and Tier 4 (ARIMA with time-varying economic predictors), which are expected to reduce forecast uncertainty.
 
 The analysis pipeline is fully reproducible and versioned. All outputs trace back to a unique `forge_hash` linking the forecast to the exact historical data slice used for model training.
 

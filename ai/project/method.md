@@ -78,7 +78,7 @@ EDA operates on Ellis output and produces analytical insight (reports, visualiza
 - **Model tiers** (increasing complexity):
   1. **Naive baseline**: Last observed value propagated forward (benchmark)
   2. **ARIMA**: Auto-selected orders via `forecast::auto.arima()` on log-transformed series
-  3. **ARIMA + static predictor**: Include client type as exogenous regressor (slowly-varying in demo data)
+  3. **Subgroup disaggregation**: Fit the same model specification (e.g., ARIMA) independently for each client-type caseload series. Client type is a classification of the social service (ETW, BFE, AISH, etc.), not a property of the individual — a person may transition between client types over time, but each client-type caseload series has its own dynamics. Tier 3 asks: does forecasting at the subgroup level and summing improve on forecasting the aggregate directly?
   4. **ARIMA + time-varying predictor**: Placeholder for economic indicator (e.g., oil price, unemployment rate) — structure only, real covariate TBD
 - **Model storage**: Save fitted model objects as `.rds` in `./data-private/derived/models/` (R-native format; model objects cannot be stored as parquet); register metadata in model registry CSV with `forge_hash` linking back to `forge_manifest.yml`
 - **Performance metrics**: RMSE, MAE, MAPE on held-out 24-month backtesting window

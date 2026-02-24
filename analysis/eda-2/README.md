@@ -255,7 +255,7 @@ This EDA provides the diagnostic foundation for the Mint pattern (method.md §3)
 3. **Train lanes** (consume Mint artifacts, never Ellis output directly):
    - Tier 1: Naive baseline (benchmark)
    - Tier 2: ARIMA on log-transformed series (auto-selected orders)
-   - Tier 3: ARIMA + static predictor (client type)
+   - Tier 3: Subgroup disaggregation (per client-type ARIMA, then sum)
    - Tier 4: ARIMA + time-varying predictor (structure only)
 
 4. **Performance metrics**: RMSE, MAE, MAPE on 24-month test period
