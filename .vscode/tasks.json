@@ -373,6 +373,23 @@
 				"panel": "shared"
 			},
 			"problemMatcher": []
+		},
+		{
+			"label": "Open Site in Browser",
+			"detail": "Open _site/index.html in the default browser",
+			"type": "shell",
+			"command": "Start-Process",
+			"args": [
+				"\"${workspaceFolder}\\_site\\index.html\""
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"panel": "shared"
+			},
+			"problemMatcher": []
 		}
 	]
 }
