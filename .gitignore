@@ -59,6 +59,13 @@ rsconnect/
 # Exclude caches in case they contain PHI
 cache/
 
+# ---- Quarto build artifacts -----------------------------------------------
+_site/
+_book/
+_freeze/
+.quarto/
+quarto_web/
+
 # knitr and RMarkdown default cache directories
 *_cache/
 
@@ -128,3 +135,5 @@ analysis/*/*/*/*.html
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/settings.json.example
+
+/.quarto/
