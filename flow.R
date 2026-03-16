@@ -164,6 +164,9 @@ ds_rail  <- tibble::tribble(
   # PHASE 6: REPORT (Deliverables)
   # ===============================
 
+  # EDA-2: Exploratory analysis report (time series diagnostics, stationarity)
+   "run_qmd"   , "analysis/eda-2/eda-2.qmd",             # Exploratory data analysis report
+
   # Lane 6 — Report: Forecast summary, model comparison, backtest evidence
    "run_qmd"   , "analysis/report-1/report-1.qmd",       # IS caseload forecast report (Lanes 3-5 → HTML)
 
@@ -237,42 +240,30 @@ run_rmd <- function( minion ) {
 }
 
 run_qmd <- function( minion ) {
-  # Check if quarto is available
-  if (!requireNamespace("quarto", quietly = TRUE)) {
-    stop("The 'quarto' package is required to render .qmd files. Please install it with: install.packages('quarto')")
-  }
-  
-  message("Quarto available: ", quarto::quarto_path() != "")
-  if (quarto::quarto_path() != "") {
-    message("Quarto version: ", system2(quarto::quarto_path(), "--version", stdout = TRUE))
-  }
-
-  message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
-  
-  # Try-catch for better error handling
   tryCatch({
-    path_out <- quarto::quarto_render(minion, execute_dir = dirname(minion))
-    Sys.sleep(3) # Sleep for three secs, to let quarto finish
-    message(path_out)
-  }, error = function(e) {
-    message("Error rendering ", basename(minion), ": ", e$message)
-    message("Attempting fallback to direct CLI...")
-    
-    # Fallback to direct CLI call
-    tryCatch({
-      old_wd <- getwd()
-      setwd(dirname(minion))
-      result <- system2(quarto::quarto_path(), c("render", basename(minion)), 
-                       stdout = TRUE, stderr = TRUE)
-      setwd(old_wd)
-      message("CLI render result: ", paste(result, collapse = "\n"))
-    }, error = function(e2) {
-      warning("Both R package and CLI rendering failed for ", basename(minion))
-      message("Error details: ", e2$message)
-    })
-  })
+    message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
 
-  return( TRUE )
+    if (!requireNamespace("quarto", quietly = TRUE)) {
+      message("quarto package not installed - skipping ", basename(minion))
+      return( TRUE )
+    }
+    quarto_path <- quarto::quarto_path()
+    if (is.null(quarto_path) || nchar(quarto_path) == 0) {
+      message("quarto CLI not found - skipping ", basename(minion))
+      return( TRUE )
+    }
+
+    # Use absolute path so quarto can find the file regardless of CWD
+    minion_abs <- normalizePath(minion, mustWork = FALSE)
+    quarto::quarto_render(minion_abs)  # quarto infers execute_dir from file location
+
+    message("Completed `", basename(minion), "`.")
+    return( TRUE )
+
+  }, error = function(e) {
+    message("Error rendering ", basename(minion), ": ", conditionMessage(e))
+    return( TRUE )
+  })
 }
 run_python <- function( minion ) {
   message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
