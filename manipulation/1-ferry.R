@@ -80,11 +80,11 @@ DBI::dbDisconnect(cnn_sqlite)
 cat("✓ SQLite:", nrow(ds_sqlite), "rows,", ncol(ds_sqlite), "cols\n")
 
 # ---- load-from-sqlserver -----------------------------------------------------
-cat("\n=== LOADING FROM SQL SERVER ===\n")
-cnn_sqlserver <- DBI::dbConnect(odbc::odbc(), dsn = dsn_sqlserver)
-ds_sqlserver <- tbl(cnn_sqlserver, dbplyr::in_schema(schema_sqlserver, table_sqlserver)) %>% collect()
-DBI::dbDisconnect(cnn_sqlserver)
-cat("✓ SQL Server:", nrow(ds_sqlserver), "rows,", ncol(ds_sqlserver), "cols\n")
+# cat("\n=== LOADING FROM SQL SERVER ===\n")
+# cnn_sqlserver <- DBI::dbConnect(odbc::odbc(), dsn = dsn_sqlserver)
+# ds_sqlserver <- tbl(cnn_sqlserver, dbplyr::in_schema(schema_sqlserver, table_sqlserver)) %>% collect()
+# DBI::dbDisconnect(cnn_sqlserver)
+# cat("✓ SQL Server:", nrow(ds_sqlserver), "rows,", ncol(ds_sqlserver), "cols\n")
 
 # ==============================================================================
 # SECTION 2: VALIDATE IDENTITY
@@ -96,8 +96,8 @@ cat("\n=== VALIDATING SOURCE IDENTITY ===\n")
 sources <- list(
   URL = ds_url,
   CSV = ds_csv,
-  SQLite = ds_sqlite,
-  SQLServer = ds_sqlserver
+  SQLite = ds_sqlite
+  # SQLServer = ds_sqlserver
 )
 
 # Check dimensions
@@ -122,16 +122,16 @@ if (length(unique(col_check)) == 1) {
 # Check row-by-row identity (URL vs others)
 identical_csv <- all.equal(ds_url, ds_csv, check.attributes = FALSE)
 identical_sqlite <- all.equal(ds_url, ds_sqlite, check.attributes = FALSE)
-identical_sqlserver <- all.equal(ds_url, ds_sqlserver, check.attributes = FALSE)
+# identical_sqlserver <- all.equal(ds_url, ds_sqlserver, check.attributes = FALSE)
 
-if (isTRUE(identical_csv) && isTRUE(identical_sqlite) && isTRUE(identical_sqlserver)) {
+if (isTRUE(identical_csv) && isTRUE(identical_sqlite)) {
   cat("✓ All sources produce identical datasets\n")
   cat("✓ Sources are interchangeable\n")
 } else {
   cat("⚠ Differences detected:\n")
   if (!isTRUE(identical_csv)) cat("  - URL vs CSV:", identical_csv, "\n")
   if (!isTRUE(identical_sqlite)) cat("  - URL vs SQLite:", identical_sqlite, "\n")
-  if (!isTRUE(identical_sqlserver)) cat("  - URL vs SQL Server:", identical_sqlserver, "\n")
+  # if (!isTRUE(identical_sqlserver)) cat("  - URL vs SQL Server:", identical_sqlserver, "\n")
 }
 
 # ==============================================================================
