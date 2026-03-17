@@ -3,7 +3,16 @@
 Human decisions and reasoning. AI copilots are prohibited to edit this file.  
 
 ---
+
+## 2026-02-25
+
+- Update on Forecasting Capacities to anticipate Snowflake planning session
+
 ## 2026-02-24
+
+- A letter to Health Analytics
+- A meeting prep with Azure
+- A letter to Center for Data Excellence
 
 
 ## 2026-02-23
