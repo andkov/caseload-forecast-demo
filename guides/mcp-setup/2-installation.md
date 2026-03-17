@@ -28,7 +28,7 @@
 npm install -g @modelcontextprotocol/server-filesystem
 ```
 
-**Result**: Server installed to `C:\Users\andriy.koval\AppData\Roaming\npm\node_modules\@modelcontextprotocol\server-filesystem\`
+**Result**: Server installed to `C:\Users\taras.melnyk\AppData\Roaming\npm\node_modules\@modelcontextprotocol\server-filesystem\`
 
 ### VS Code Configuration
 
@@ -58,7 +58,7 @@ npm install -g @modelcontextprotocol/server-filesystem
 
 **Manual Test Command**:
 ```powershell
-& "C:\Program Files\nodejs\node.exe" "C:\Users\andriy.koval\AppData\Roaming\npm\node_modules\@modelcontextprotocol\server-filesystem\dist\index.js" "$(Get-Location)\data-public"
+& "C:\Program Files\nodejs\node.exe" "C:\Users\taras.melnyk\AppData\Roaming\npm\node_modules\@modelcontextprotocol\server-filesystem\dist\index.js" "$(Get-Location)\data-public"
 ```
 
 **Expected Output**: `Secure MCP Filesystem Server running on stdio`
