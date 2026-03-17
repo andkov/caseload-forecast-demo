@@ -1,0 +1,236 @@
+---
+format:
+  pdf:
+    documentclass: article
+    papersize: letter
+    fontsize: 11pt
+    geometry:
+      - top=0.75in
+      - bottom=1.05in
+      - left=0.85in
+      - right=0.85in
+    toc: false
+    number-sections: false
+    colorlinks: true
+    keep-tex: false
+    include-in-header:
+      text: |
+        \usepackage{fancyhdr}
+        \usepackage{graphicx}
+        \usepackage{xcolor}
+        \usepackage{enumitem}
+        \usepackage{array}
+        \usepackage{booktabs}
+        \definecolor{goateal}{HTML}{00AAD2}
+        \definecolor{goagrey}{HTML}{434854}
+        \AtBeginDocument{\hypersetup{urlcolor=goateal, linkcolor=goateal}}
+        % ---- Custom memo section heading
+        \newcommand{\memosec}[1]{%
+          \vspace{8pt}%
+          \noindent{\color{goateal}\normalsize\bfseries #1}\\[-2pt]%
+          \noindent{\color{goateal}\rule{\linewidth}{0.5pt}}\\[3pt]%
+        }
+        % ---- Body text spacing
+        \setlength{\parskip}{5pt}
+        \setlength{\parindent}{0pt}
+        % ---- Footer
+        \pagestyle{fancy}
+        \fancyhf{}
+        \renewcommand{\headrulewidth}{0pt}
+        \renewcommand{\footrulewidth}{0.4pt}
+        \fancyfoot[L]{\parbox[b]{0.63\textwidth}{\scriptsize\color{goagrey}%
+          Strategic Analytics Branch\\%
+          Ministry of Social Services,\  Government of Alberta\\%
+          Classification: Protected A}}
+        \fancyfoot[R]{\parbox[b]{0.28\textwidth}{\raggedleft%
+          \raisebox{-0.15in}{\includegraphics[height=0.48in]{alberta_logo.png}}}}
+        % ---- Suppress default Quarto title block
+        \renewcommand{\maketitle}{}
+        % ---- Body text color
+        \color{goagrey}
+        % ---- Compact lists
+        \setlist[itemize]{noitemsep, topsep=2pt, partopsep=0pt, leftmargin=1.4em}
+        \setlist[enumerate]{noitemsep, topsep=2pt, partopsep=0pt, leftmargin=1.4em}
+editor: source
+editor_options:
+  chunk_output_type: console
+---
+
+```{=latex}
+% ============================================================
+%  BRIEFING NOTE HEADER BLOCK
+% ============================================================
+\noindent{\color{goateal}\rule{\linewidth}{1.8pt}}
+\vspace{2pt}
+
+\noindent{\color{goateal}\Large\bfseries BRIEFING NOTE}
+\hfill{\small\color{goagrey} March 13, 2026}
+
+\noindent{\color{goagrey}\normalsize\itshape
+  Income Support Caseload Forecast --- Key Findings, Model Confidence, and Interpretation Guidance}
+
+\vspace{3pt}
+\noindent{\color{goateal}\rule{\linewidth}{0.5pt}}
+\vspace{5pt}
+
+\def\arraystretch{1.4}
+\noindent\begin{tabular}{@{}p{0.7in}@{\hspace{8pt}}p{5.4in}}
+\textbf{\color{goateal}TO:}    & Nils Holgerssons, Executive Director, Strategic Analytics Branch \\                               
+                               & Arjuna Kuru, Director, Tactical Analytics Unit \\                  
+                               & Ministry of Social Services \\[3pt]             
+\textbf{\color{goateal}FROM:}  & Taras Melnyk, Data Analyst, Research and Modeling Team \\[3pt]
+\textbf{\color{goateal}RE:}    & Stage 1 Forecasting System --- 24-Month Outlook for Income Support Caseload \\
+\end{tabular}
+
+\vspace{5pt}
+\noindent{\color{goateal}\rule{\linewidth}{1.8pt}}
+\vspace{6pt}
+```
+
+```{=latex}
+\memosec{PURPOSE}
+```
+
+This note communicates the principal findings of the automated Income Support caseload forecasting
+system (`caseload-forecast-demo`, Stage 1). It answers three questions for decision-makers: what does the
+dominant model predict over the next two years, how reliably should those predictions be treated, and
+what contextual factors must be kept in mind when interpreting the numbers? A full technical appendix
+(`note-1-appendix.html`) substantiates every claim made here with charts, diagnostic tables, and data
+provenance details.
+
+```{=latex}
+\memosec{KEY FINDINGS}
+```
+
+The ARIMA model projects the Income Support caseload will remain \textbf{essentially stable at
+approximately 61,000 cases} through September 2027. The September 2025
+baseline of 61,061 cases is expected to change by fewer than 200 cases (+0.2\%) at the 24-month
+central estimate. This is not a forecast of growth or decline --- it is a forecast of \emph{stability}
+under current conditions.
+
+\vspace{4pt}
+
+```{=latex}
+\def\arraystretch{1.35}
+\noindent\begin{tabular}{@{}p{0.85in}@{\hspace{4pt}}p{0.9in}@{\hspace{4pt}}p{0.85in}@{\hspace{4pt}}p{1.6in}@{\hspace{4pt}}p{0.65in}@{\hspace{4pt}}p{0.65in}@{}}
+\toprule
+\textbf{\color{goateal}Horizon} & \textbf{\color{goateal}Month} &
+\textbf{\color{goateal}Forecast} & \textbf{\color{goateal}95\% Pred.\ Interval} &
+\textbf{\color{goateal}vs Now} & \textbf{\color{goateal}\% Change} \\
+\midrule
+Current    & Sep 2025 & 61,061    & ---                   & ---     & ---      \\
++6 months  & Mar 2026 & 61,794    & 54,164 -- 70,499      & +733    & +1.2\%   \\
++12 months & Sep 2026 & 61,237    & 48,251 -- 77,719      & +176    & +0.3\%   \\
++18 months & Mar 2027 & 61,497    & 42,700 -- 88,570      & +436    & +0.7\%   \\
++24 months & Sep 2027 & 61,211    & 37,831 -- 99,039      & +150    & +0.2\%   \\
+\bottomrule
+\end{tabular}
+```
+
+\vspace{6pt}
+
+```{=latex}
+\begin{center}
+\includegraphics[width=0.96\textwidth]{g1_forecast_report.png}\\[2pt]
+{\small\color{goagrey}\textit{Figure 1.\ Alberta Income Support: 20-year history (teal) with 24-month ARIMA projection.
+Shaded bands show 80\% and 95\% prediction intervals. Dashed line marks September 2025 (latest data).}}
+\end{center}
+```
+
+The 95\% prediction interval widens substantially with time: approximately $\pm$8,200 at six months,
+growing to $\pm$30,000 at 24 months. This expanding range is expected --- it reflects the genuine
+uncertainty inherited from 20 years of historical volatility --- and should inform how management
+uses these numbers (see Recommended Actions).
+
+```{=latex}
+\memosec{MODEL CONFIDENCE}
+```
+
+\noindent\textbf{Dominant model: ARIMA(3,1,1)(1,0,0)[12].}
+Two competing models were evaluated. The \emph{Seasonal Naive} baseline (Tier 1) repeats the previous
+year's seasonal pattern without trend. The \emph{ARIMA} model (Tier 2) was automatically selected
+from the full 20-year history (222 months of training data) on a log-transformed series, capturing
+both the trend and the annual seasonal cycle. It is the recommended model for planning purposes.
+
+\vspace{4pt}
+
+```{=latex}
+\def\arraystretch{1.35}
+\noindent\begin{tabular}{@{}p{1.4in}@{\hspace{8pt}}p{1.7in}@{\hspace{8pt}}p{0.7in}@{\hspace{8pt}}p{0.7in}@{\hspace{8pt}}p{0.8in}@{}}
+\toprule
+\textbf{\color{goateal}Model} & \textbf{\color{goateal}Specification} &
+\textbf{\color{goateal}RMSE} & \textbf{\color{goateal}MAE} &
+\textbf{\color{goateal}MAPE} \\
+\midrule
+Tier 1: Naive Baseline & Seasonal naive (repeat last year) & 10,300 & 9,545 & 16.4\% \\
+Tier 2: ARIMA          & (3,1,1)(1,0,0)[12] on log series  & 8,639  & 7,831 & 13.3\% \\
+\bottomrule
+\end{tabular}
+```
+
+\vspace{4pt}
+
+{\small\color{goagrey}\textit{Metrics from 24-month backtest validation (October 2023 -- September 2025, held out during training).
+RMSE = root mean squared error; MAE = mean absolute error; MAPE = mean absolute percentage error.}}
+
+\vspace{5pt}
+
+The ARIMA model reduces MAPE by three percentage points relative to the Naive baseline, translating
+to roughly 1,700 fewer cases of average monthly error. That improvement is meaningful for
+budget planning, though the 13.3\% MAPE (approximately 8,100 cases per month on average) also
+signals that precision is limited: \textbf{these are directional forecasts, not exact counts.}
+
+```{=latex}
+\memosec{INTERPRETATION GUIDANCE}
+```
+
+Four factors should shape how leadership reads the forecast table:
+
+\noindent\textbf{1.\ Stability is the central story, not a default.}
+The ARIMA model's flat trajectory reflects the recent trend: caseload stabilised in the 60,000-62,000
+range following the post-COVID normalisation in 2022. The forecast extends that observed stability
+forward. It is not an artifact of model conservatism.
+
+\noindent\textbf{2.\ Prediction intervals reflect real-world volatility.}
+The 95\% prediction interval at 24 months spans nearly 61,000 cases (from 37,831 to 99,039). These
+wide bounds are not a modelling failure. They honestly represent a system that has experienced a
++50\% change during COVID-19 and a $-$20\% change during post-pandemic normalisation. If history
+repeats at a similar magnitude, the actual caseload in 2027 could land anywhere in that range.
+
+\noindent\textbf{3.\ Short horizons are substantially more reliable.}
+At six months, the 95\% interval spans ~16,000 cases (±13\% of current). At 24 months it spans
+~61,000 cases (±50\%). Six- to twelve-month forecasts are appropriate for operational planning;
+twenty-four month forecasts are best used for scenario bookending.
+
+\noindent\textbf{4.\ The forecast is not policy-sensitive.}
+This model captures statistical patterns in historical data. It cannot anticipate a new structural
+break --- an economic recession, an oil price shock, a pandemic, or a program policy
+change. When such events occur, the model must be retrained with updated data to recalibrate.
+
+```{=latex}
+\memosec{RECOMMENDED ACTIONS}
+```
+
+\begin{enumerate}
+\item \textbf{Use central forecast for baseline planning; use the 95\% upper bound as the contingency
+  ceiling.} At +12 months the upper bound is 77,719 cases --- a reasonable stress-test scenario
+  given historical precedent.
+
+\item \textbf{Schedule quarterly model refresh.} The pipeline is fully automated and can regenerate
+  all forecasts from updated open data with a single command (\texttt{Rscript flow.R}). A quarterly
+  cycle ensures the forecast incorporates the most recent trend.
+
+\item \textbf{Commission Tier 3 (client-type disaggregation) for program planning.} Income Support
+  comprises four distinct client populations with different drivers. Forecasting each separately
+  (and summing back to the total) would provide program managers with caseload trajectories tailored
+  to their service lines, and is the planned next model tier.
+\end{enumerate}
+
+```{=latex}
+\vspace{10pt}
+\noindent{\small\color{goagrey}\textit{AI Assistance Disclosure:
+This document was drafted with the assistance of an AI coding assistant
+(GitHub Copilot, Claude) for structure, language refinement, and alignment with
+project documentation. All content reflects the author's professional judgment
+and was reviewed for accuracy against pipeline output artifacts.}}
+```
