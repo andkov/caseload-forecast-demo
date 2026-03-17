@@ -375,6 +375,51 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "Create Data Assets",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"manipulation/nonflow/create-data-assets.R"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Report Lane 1 (R Script)",
+			"detail": "Execute report preparation script to generate summary tables and artifacts",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"analysis/report-1/report-1.R"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Render Report 1 (Quarto)",
+			"detail": "Render Report 1 Quarto document (report-1.qmd) to HTML",
+			"type": "shell",
+			"command": "quarto",
+			"args": [
+				"render",
+				"analysis/report-1/report-1.qmd"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": [],
+			"dependsOn": ["Run Report Lane 1 (R Script)"]
+		},
+		{
 			"label": "Open Site in Browser",
 			"detail": "Open _site/index.html in the default browser",
 			"type": "shell",
