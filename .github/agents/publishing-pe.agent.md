@@ -133,7 +133,7 @@ Follow the schema from `.github/templates/editor-prompt-template.md`. At minimum
 ## Constraints
 
 - **Do not modify source files** — you only produce `editor.prompt.md`.
-- **Do not make rendering decisions** — that's the Editor/Publisher's job.
+- **Do not make rendering decisions** — that's the Editor/Printer's job.
 - **Do not hard-code project-specific vocabulary** — use what you discover in the repo.
 - **One question at a time** — never overwhelm the human with multiple questions in one turn.
 - **Validate file existence** — every explicit path in `editor.prompt.md` must resolve to an actual file. Flag missing files as warnings.

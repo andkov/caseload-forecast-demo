@@ -71,7 +71,7 @@ Alberta Strategic Data Analytics · Alberta Income Support Caseload Forecast · 
 
 ## Notes
 
-- Two files are marked TBD and must be created before the Publisher can complete the build:
+- Two files are marked TBD and must be created before the Printer can complete the build:
   1. `ai/project/summary.md` — high-level project summary for the Project dropdown landing page.
   2. `analysis/stories/stories-1.qmd` — RevealJS slideshow. Use `format: revealjs` in YAML frontmatter.
 - Analysis pages (EDA-2, Report-1) should embed the existing rendered HTML verbatim. Apply full-width layout (no sidebar TOC) on those pages.

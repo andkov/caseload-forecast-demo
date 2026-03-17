@@ -23,7 +23,7 @@ The root `README.md` is the default source for the website index page unless `ed
 3. **Rewrite internal links**: Update links that point to repository files so they resolve within the website. For example:
    - `./guides/getting-started.md` → `guides/getting-started.html` (if that page exists in the site).
    - Links to files not included in the website should be removed or replaced with brief descriptions.
-4. **Align with site map**: If `editor.prompt.md` or `publisher.prompt.md` defines navigation sections, ensure the index page's content and links are consistent with that structure.
+4. **Align with site map**: If `editor.prompt.md` or `printer.prompt.md` defines navigation sections, ensure the index page's content and links are consistent with that structure.
 5. **Apply user notes**: If `editor.prompt.md` contains notes about the index page, apply them during transformation.
 
 ## Output

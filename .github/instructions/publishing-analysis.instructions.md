@@ -33,7 +33,7 @@ analysis/
 
 When `editor.prompt.md` references an analysis unit (e.g., `analysis/eda-1`):
 
-1. **Default**: Use the `.qmd` source as canonical content. Copy it to `content/<section>/` and let Quarto render it during the Publisher's build step.
+1. **Default**: Use the `.qmd` source as canonical content. Copy it to `content/<section>/` and let Quarto render it during the Printer's build step.
 2. **HTML override**: If `editor.prompt.md` explicitly says to use existing `.html`, embed the HTML body content inline in a `.qmd` wrapper (per `publishing-content.instructions.md` rules).
 
 ## Figure Selection

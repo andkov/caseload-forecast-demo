@@ -1,13 +1,13 @@
 # questions.prompt.md Template
 
-This template defines the schema for `questions.prompt.md` — the file the Publishing Publisher writes when it encounters a blocker it cannot resolve deterministically. The Orchestrator reads this file and routes each question to the human for resolution.
+This template defines the schema for `questions.prompt.md` — the file the Publishing Printer writes when it encounters a blocker it cannot resolve deterministically. The Orchestrator reads this file and routes each question to the human for resolution.
 
 ---
 
 ## Schema
 
 ```markdown
-# Publisher Questions
+# Printer Questions
 
 Questions generated during the publishing build. Each question blocks further progress until resolved.
 
@@ -40,7 +40,7 @@ Questions generated during the publishing build. Each question blocks further pr
 | Field | Required | Description |
 |-------|----------|-------------|
 | Issue | Yes | One-line description of the problem |
-| Step | Yes | Publisher workflow step where the block occurred |
+| Step | Yes | Printer workflow step where the block occurred |
 | File(s) | Yes | Path(s) to the affected file(s) |
 | Options | Yes | Numbered list of possible resolutions (at least 2) |
 | Required action | Yes | What the human must decide or supply |
@@ -50,17 +50,17 @@ Questions generated during the publishing build. Each question blocks further pr
 
 ## Lifecycle
 
-1. **Publisher writes**: Creates `questions.prompt.md` with one or more `open` questions, then stops execution.
+1. **Printer writes**: Creates `questions.prompt.md` with one or more `open` questions, then stops execution.
 2. **Orchestrator reads**: Detects the file, presents each question to the human.
 3. **Human decides**: Provides answers for each question.
-4. **Orchestrator updates**: Applies the human's decisions to the relevant contract files (`editor.prompt.md`, `publisher.prompt.md`, or `content/` files).
+4. **Orchestrator updates**: Applies the human's decisions to the relevant contract files (`editor.prompt.md`, `printer.prompt.md`, or `content/` files).
 5. **Orchestrator deletes**: Removes `questions.prompt.md` after all questions are resolved.
-6. **Orchestrator re-invokes**: Runs the Publisher again.
+6. **Orchestrator re-invokes**: Runs the Printer again.
 
 ---
 
 ## Constraints
 
-- The Publisher must **stop immediately** after writing this file — no partial builds, no workarounds.
+- The Printer must **stop immediately** after writing this file — no partial builds, no workarounds.
 - Each question must present **at least two options** so the human has a clear choice.
 - The Orchestrator must **delete** this file before re-invoking the Publisher to prevent stale questions from persisting.

@@ -73,7 +73,7 @@ Alberta Strategic Data Analytics · Alberta Income Support Caseload Forecast · 
 
 ## Notes
 
-- Three files are marked TBD and must be created before the Publisher can complete the build:
+- Three files are marked TBD and must be created before the Printer can complete the build:
   1. `index.md` — landing page with mermaid pipeline diagram first, forecast image second, brief orientation text third.
   2. `ai/project/summary.md` — high-level project summary for the Project dropdown landing page.
   3. `analysis/stories/stories-1.qmd` — RevealJS slideshow. Use `format: revealjs` in YAML frontmatter.
