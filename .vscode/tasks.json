@@ -375,7 +375,6 @@
 			"problemMatcher": []
 		},
 		{
-<<<<<<< HEAD
 			"label": "Create Data Assets",
 			"type": "shell",
 			"command": "Rscript",
@@ -391,20 +390,11 @@
 			"command": "Rscript",
 			"args": [
 				"analysis/report-1/report-1.R"
-=======
-			"label": "Open Site in Browser",
-			"detail": "Open _site/index.html in the default browser",
-			"type": "shell",
-			"command": "Start-Process",
-			"args": [
-				"\"${workspaceFolder}\\_site\\index.html\""
->>>>>>> 8c686d3547f989d801847fe362e5f2cc8fa83e91
 			],
 			"isBackground": false,
 			"group": "build",
 			"presentation": {
 				"echo": true,
-<<<<<<< HEAD
 				"reveal": "always",
 				"panel": "shared"
 			},
@@ -428,12 +418,23 @@
 			},
 			"problemMatcher": [],
 			"dependsOn": ["Run Report Lane 1 (R Script)"]
-=======
+		},
+		{
+			"label": "Open Site in Browser",
+			"detail": "Open _site/index.html in the default browser",
+			"type": "shell",
+			"command": "Start-Process",
+			"args": [
+				"\"${workspaceFolder}\\_site\\index.html\""
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
 				"reveal": "silent",
 				"panel": "shared"
 			},
 			"problemMatcher": []
->>>>>>> 8c686d3547f989d801847fe362e5f2cc8fa83e91
 		}
 	]
 }
