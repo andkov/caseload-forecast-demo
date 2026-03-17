@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../azure-aml-demo"
+		},
+		{
+			"path": "../caseload-forecast-demo-oleksandkov"
 		}
 	],
 	"settings": {}
