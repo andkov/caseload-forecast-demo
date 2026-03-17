@@ -114,6 +114,7 @@ Desktop.ini
 # Private memos and internal briefing notes - never upload
 analysis/memo-*/
 analysis/letter-*/
+analysis/meeting-*/
 analysis/*/*.png
 analysis/*/*.jpg
 analysis/*/*.html
@@ -123,6 +124,8 @@ analysis/*/*/*.html
 analysis/*/*/*/*.png
 analysis/*/*/*/*.jpg
 analysis/*/*/*/*.html
+
+analysis/workshop-1/*
 
 !analysis/analysis-templatization/README.html
 # ---- Accidentally Added Code -------------------------------
@@ -137,3 +140,4 @@ analysis/*/*/*/*.html
 !.vscode/settings.json.example
 
 /.quarto/
+.copilot-persona
