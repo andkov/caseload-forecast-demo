@@ -1,0 +1,15 @@
+---
+title: "Exploratory Data Analysis"
+format:
+  html:
+    page-layout: full
+    toc: false
+---
+
+```{=html}
+<meta http-equiv="refresh" content="0; url=../../analysis/eda-2/eda-2.html">
+<p style="margin-top:2rem;font-size:1.1rem;">
+  Opening EDA report&hellip;
+  <a href="../../analysis/eda-2/eda-2.html">Click here if not redirected automatically.</a>
+</p>
+```

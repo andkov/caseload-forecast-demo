@@ -94,10 +94,35 @@ Copy the `.html` file alongside the page so the link resolves.
 
 ## 5. Figure and Asset References
 
-- Copy all referenced images, figures, and media into `content/<section>/` subdirectories.
+### Mandatory: Asset Resolution for Verbatim-Copied Files
+
+When a source file is copied verbatim into `content/`, its relative image and asset references still point to paths relative to its **original location** in the repo. Those paths will break when the file is rendered from `content/`. The Editor **must** resolve all assets.
+
+**Algorithm — apply to every verbatim-copied `.md`, `.qmd`, or `.html`:**
+
+1. **Scan** the source file for all local asset references:
+   - Markdown images: `![...](path)`
+   - HTML images: `<img src="path">`
+   - HTML/CSS resources: `<link href="path">`, `<script src="path">`
+   - Quarto includes: `{{< include path >}}`
+   - Exclude absolute URLs (`http://`, `https://`, `data:`).
+
+2. **Resolve** each relative path against the source file's original directory in the repo.
+
+3. **Copy** the resolved file to a mirrored path under `content/<section>/`:
+   - Preserve the relative path structure so the reference in the copied file still resolves correctly.
+   - Example: source at `README.md` references `libs/images/foo.png` → copy to `content/docs/libs/images/foo.png`.
+   - Example: source at `analysis/report-1/report-1.qmd` references `prints/fig.png` → copy to `content/analysis/prints/fig.png`.
+
+4. **Do not rewrite** the file's internal references. Preserving the relative paths means the copy resolves automatically from its new location — no path surgery needed.
+
+5. **Recurse**: if a copied asset is itself a file that references further assets (e.g., an included `.md`), apply the same algorithm to it.
+
+### Additional asset rules
+
 - Prefer `prints/` sources when both `prints/` and `figure-png-iso/` exist for the same figure.
-- Update relative paths in page files so they resolve from the new location.
-- Ensure the `content/` folder is fully self-contained — no external path dependencies.
+- Ensure the `content/` folder is fully self-contained — no asset may reference a path outside `content/`.
+- Document every asset copy in `printer.prompt.md` under the **Assets** section.
 
 ## 6. Sync Behavior
 

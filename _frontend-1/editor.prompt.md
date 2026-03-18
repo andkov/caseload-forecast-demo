@@ -61,7 +61,7 @@ Quarto website
 
 ## Theme
 
-sketchy
+journal
 
 ## Repo URL
 

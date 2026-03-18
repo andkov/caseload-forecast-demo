@@ -1,0 +1,15 @@
+---
+title: "Forecast Report"
+format:
+  html:
+    page-layout: full
+    toc: false
+---
+
+```{=html}
+<meta http-equiv="refresh" content="0; url=../../analysis/report-1/report-1.html">
+<p style="margin-top:2rem;font-size:1.1rem;">
+  Opening Forecast Report&hellip;
+  <a href="../../analysis/report-1/report-1.html">Click here if not redirected automatically.</a>
+</p>
+```

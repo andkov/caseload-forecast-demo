@@ -1,0 +1,65 @@
+project:
+  type: website
+  output-dir: _site
+  pre-render:
+    - Rscript scripts/prep-pipeline-qmd.R
+  post-render:
+    - Rscript scripts/copy-analysis-html.R
+  render:
+    - content/index.qmd
+    - content/project/summary.md
+    - content/project/mission.md
+    - content/project/method.md
+    - content/project/glossary.md
+    - content/pipeline/pipeline.qmd
+    - content/pipeline/cache-manifest.md
+    - content/analysis/eda-2.qmd
+    - content/analysis/report-1.qmd
+    - content/docs/readme.qmd
+    - content/docs/publishing-orchestra.md
+    - content/docs/site-map.md
+
+website:
+  title: "Alberta Income Support: Caseload Forecast"
+  repo-url: "https://github.com/your-org/caseload-forecast-demo"
+  page-footer:
+    center: "Alberta Strategic Data Analytics · Alberta Income Support Caseload Forecast · Built with Quarto"
+  navbar:
+    left:
+      - text: "Project"
+        menu:
+          - text: "Summary"
+            href: content/project/summary.md
+          - text: "Mission"
+            href: content/project/mission.md
+          - text: "Method"
+            href: content/project/method.md
+          - text: "Glossary"
+            href: content/project/glossary.md
+      - text: "Pipeline"
+        menu:
+          - text: "Pipeline Guide"
+            href: content/pipeline/pipeline.qmd
+          - text: "CACHE Manifest"
+            href: content/pipeline/cache-manifest.md
+      - text: "Analysis"
+        menu:
+          - text: "EDA"
+            href: content/analysis/eda-2.qmd
+          - text: "Report"
+            href: content/analysis/report-1.qmd
+      - text: "Docs"
+        menu:
+          - text: "README"
+            href: content/docs/readme.qmd
+          - text: "Publishing Orchestra"
+            href: content/docs/publishing-orchestra.md
+          - text: "Site Map"
+            href: content/docs/site-map.md
+
+format:
+  html:
+    theme: journal
+    toc: true
+    mermaid:
+      theme: neutral

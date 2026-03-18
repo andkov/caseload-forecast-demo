@@ -1,0 +1,33 @@
+```{mermaid}
+%%{init: { 'theme': 'neutral' } }%%
+flowchart LR
+    subgraph "Data Ingestion"
+        A["1-ferry.R<br/><i>Import</i>"]
+    end
+    subgraph "Transformation"
+        B["2-ellis.R<br/><i>Clean & Shape</i>"]
+    end
+    subgraph "Advisory"
+        C["eda-2.qmd<br/><i>Diagnostics</i>"]
+    end
+    subgraph "Modeling"
+        D["3-mint-IS.R<br/><i>Prepare</i>"]
+        E["4-train-IS.R<br/><i>Estimate</i>"]
+        F["5-forecast-IS.R<br/><i>Predict</i>"]
+    end
+    subgraph "Delivery"
+        G["report-1.qmd<br/><i>Report</i>"]
+    end
+
+    A --> B --> C
+    B --> D --> E --> F --> G
+    C -.->|informs| D
+
+    style A fill:#4a90d9,color:#fff
+    style B fill:#4a90d9,color:#fff
+    style C fill:#f5a623,color:#fff
+    style D fill:#7b68ee,color:#fff
+    style E fill:#7b68ee,color:#fff
+    style F fill:#7b68ee,color:#fff
+    style G fill:#50c878,color:#fff
+```

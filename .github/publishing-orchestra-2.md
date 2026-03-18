@@ -188,7 +188,7 @@ Workflow:
 5. Reconcile — verify every page in render list appears in `_site/`
 6. Report — pages rendered, warnings, site entry point
 
-**Key constraint**: `project.render` in `_quarto.yml` must list every page individually — never use wildcards.
+**Key constraint**: `project.render` in `_quarto.yml` must list every page individually — never use wildcards. For sites requiring asset resolution outside `content/` (e.g., redirect targets, images from root `libs/`), the Printer registers `pre-render` and `post-render` R scripts in `_quarto.yml` to handle these mechanically — no manual file placement.
 
 ---
 
@@ -242,7 +242,7 @@ These auto-apply to matching file contexts and guide the Editor during normaliza
 
 | File | `applyTo` | Governs |
 |------|-----------|---------|
-| `publishing-content.instructions.md` | `_frontend-*/**` | General normalization: `.md` → transit `.qmd`; `.html` → inline embed; asset copying |
+| `publishing-content.instructions.md` | `_frontend-*/**` | General normalization: verbatim asset resolution algorithm; `.md`→`.qmd` promotion for executable content; redirect transit pages for standalone HTML; mandatory image co-location |
 | `publishing-analysis.instructions.md` | `analysis/**` | Analysis content: prefer `.qmd` source; use `.html` for embed-specified pages; figure selection from `prints/`; exclusions |
 | `publishing-manipulation.instructions.md` | `manipulation/**` | Pipeline content: `pipeline.md` as primary; include `images/`; exclude `.R`, `nonflow/` |
 | `publishing-index.instructions.md` | `_frontend-*/**` | Landing page: adapt `README.md` for web audience; strip dev commands; align links with site map; homepage requires human design, not verbatim copy |

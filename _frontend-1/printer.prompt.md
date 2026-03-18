@@ -9,7 +9,7 @@ _frontend-1/
 _frontend-1/
 
 ## Theme
-sketchy
+journal
 
 ## Site Title
 Alberta Income Support: Caseload Forecast
@@ -62,7 +62,7 @@ content/index.md
 
 ## Assets
 - Copy `analysis/report-1/prints/g1_forecast_report.png` to `_frontend-1/analysis/report-1/prints/g1_forecast_report.png` so the index.md image reference resolves.
-  - **Status**: Already copied by the Editor — file present at `_frontend-1/analysis/report-1/prints/g1_forecast_report.png`.
+  - **Status**: ✅ Copied by the Editor on 2026-03-18 — file confirmed present at `_frontend-1/analysis/report-1/prints/g1_forecast_report.png`.
 
 ## Content Files Inventory
 

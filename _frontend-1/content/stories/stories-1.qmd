@@ -1,0 +1,100 @@
+---
+title: "Alberta Income Support: Caseload Forecast"
+subtitle: "Project Overview"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    preview-links: auto
+---
+
+## Project Overview
+
+- **What**: End-to-end caseload forecasting pipeline for Alberta's Income Support program
+- **Data**: Monthly Government of Alberta open data — April 2005 to September 2025 (~50,000 rows)
+- **Output**: 24-month ARIMA forecast with 80% and 95% prediction intervals
+- **Execution**: Fully reproducible — `Rscript flow.R` re-runs every stage from raw to report
+- **Phase 2**: Cloud-agnostic on-prem core designed for migration to Azure ML and Snowflake
+
+---
+
+## Data Sources
+
+- **Primary source**: [Alberta Open Data — Income Support Caseload](https://open.alberta.ca/opendata/income-support-aggregated-caseload-data)
+- **Coverage**: April 2005 – September 2025 (246 months)
+- **Dimensions**: Total caseload · Client type · Family composition · ALSS regions · Age groups · Gender
+- **Format**: Monthly aggregates, publicly updated by the Government of Alberta
+- **Ingestion**: Supports four equivalent sources — URL, CSV, SQLite, SQL Server (via Ferry pattern)
+
+---
+
+## Pipeline Architecture
+
+```{mermaid}
+flowchart LR
+    subgraph "Data Ingestion"
+        A["1-ferry.R<br/><i>Import</i>"]
+    end
+    subgraph "Transformation"
+        B["2-ellis.R<br/><i>Clean & Shape</i>"]
+    end
+    subgraph "Advisory"
+        C["eda-2.qmd<br/><i>Diagnostics</i>"]
+    end
+    subgraph "Modeling"
+        D["3-mint-IS.R<br/><i>Prepare</i>"]
+        E["4-train-IS.R<br/><i>Estimate</i>"]
+        F["5-forecast-IS.R<br/><i>Predict</i>"]
+    end
+    subgraph "Delivery"
+        G["report-1.qmd<br/><i>Report</i>"]
+    end
+
+    A --> B --> C
+    B --> D --> E --> F --> G
+    C -.->|informs| D
+
+    style A fill:#4a90d9,color:#fff
+    style B fill:#4a90d9,color:#fff
+    style C fill:#f5a623,color:#fff
+    style D fill:#7b68ee,color:#fff
+    style E fill:#7b68ee,color:#fff
+    style F fill:#7b68ee,color:#fff
+    style G fill:#50c878,color:#fff
+```
+
+---
+
+## Key EDA Findings
+
+- **20-year trend**: Total caseload shows distinct structural breaks — 2008 financial crisis, 2015–16 oil price collapse, 2020 COVID-19 surge
+- **Seasonality**: Clear annual cycle with peaks in winter months (Jan–Mar) and troughs in summer
+- **Stationarity**: ADF and KPSS tests confirm the series is integrated of order 1 (I(1)) — one round of differencing required
+- **Log transform**: Variance-stabilising log transform confirmed appropriate by EDA (reduces heteroscedasticity)
+- **ARIMA order**: ACF/PACF analysis and STL decomposition informed selection of ARIMA(3,1,1)(1,0,0)[12]
+
+---
+
+## Forecast Results
+
+![24-month ahead forecast — Alberta Income Support caseload](../../analysis/report-1/prints/g1_forecast_report.png){width=100%}
+
+---
+
+## Model Performance
+
+- **Primary model**: ARIMA(3,1,1)(1,0,0)\[12\] on log-transformed total caseload
+- **Baseline model**: Seasonal Naïve (last observed value propagated with seasonal adjustment)
+- **Backtest**: 24-month held-out window — ARIMA outperforms Seasonal Naïve on RMSE, MAE, and MAPE
+- **Prediction intervals**: 80% and 95% intervals generated for full 24-month horizon (Oct 2025 – Sep 2027)
+- **Lineage**: Every model and forecast is linked to its exact data slice via `forge_hash` in `forge_manifest.yml`
+
+---
+
+## Next Steps
+
+- **Phase 2 — Cloud migration**: Adapt on-prem pipeline to Azure ML (primary target) and Snowflake ML (secondary target)
+- **Model registry**: Transition from local `.rds` files to cloud model registry with MLflow experiment tracking
+- **Programme-level forecasts**: Re-graft onto production data with subgroup disaggregation (by client type, region)
+- **Scheduled refresh**: Replace manual `Rscript flow.R` with cloud-scheduled monthly pipeline runs
+- **Report delivery**: Migrate static HTML to cloud-hosted web app with identity-provider access control (Entra ID)
