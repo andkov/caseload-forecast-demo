@@ -4,7 +4,16 @@ AI system status and technical briefings.
 
 ---
 
+# 2026-03-18
+
+## frontend-1: Publishing Orchestra v2 — First Stable Site
+
+Built and stabilized the first static website for the caseload-forecast-demo project using the Publishing Orchestra v2 multi-agent system (`@publishing-editor` → `@publishing-printer`). Site renders 12 pages under the `journal` Quarto theme. **Key architecture decisions made during build**: (1) `file://` portability is mandatory — iframe embeds replaced with meta-refresh redirects for Analysis pages; (2) images referenced by verbatim-copied files must be co-located in `content/` — rule codified in `publishing-content.instructions.md` §5 (Mandatory Asset Resolution Algorithm); (3) pipeline diagram shared across Index, Pipeline Guide, and Docs/README via a canonical `_pipeline-diagram.qmd` partial using `{{< include >}}`; (4) files needing `{{< include >}}` shortcodes must have `.qmd` extension — pre-render script `scripts/prep-pipeline-qmd.R` generates `pipeline.qmd` from raw `manipulation/pipeline.md` on every build; (5) README needs `.qmd` promotion (permanent `readme.qmd` in `content/docs/`) for same reason. Post-render script `scripts/copy-analysis-html.R` copies redirect targets and README image assets into `_site/`. Read-only snapshot archived at `M:\SPQ\PQA\R&A\_Research and Open Data\GitHub Data\caseload-forecaste-demo\2026-03-18-frontend-1-po-2` (commit `7cc74d5`). Detailed log: `ai/memory/log/2026-03-18-frontend-1-publishing-orchestra-2.md`.
+
+---
+
 # 2026-02-23
+
 
 ## report-1: Report Lane 6
 
