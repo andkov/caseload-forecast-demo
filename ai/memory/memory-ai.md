@@ -4,6 +4,14 @@ AI system status and technical briefings.
 
 ---
 
+# 2026-03-19
+
+## Publishing Orchestra v3 — Stability Milestone
+
+Publishing Orchestra v3 reached working stability. Validated end-to-end in `_frontend-33`: 13-page static Quarto website (flatly theme), all four protocols exercised (Direct Line VERBATIM × 5, REDIRECTED × 2, Technical Bridge × 2, Narrative Bridge × 4), RevealJS Story deck with 13 slides, post-render hook copying redirect HTML targets. Full Interviewer → contract → Writer → render pipeline executed without manual fixes. Two benign warnings from VERBATIM CACHE-manifest (upstream repo-internal links — expected and harmless). **Key files**: `.github/publishing-orchestra-3.md` (design doc), `.github/agents/publishing-interviewer.agent.md`, `.github/agents/publishing-writer.agent.md`, `.github/instructions/publishing-rules.instructions.md` (`applyTo: _frontend-*/**`), `.github/templates/publishing-contract-template.md`, `.github/migration.md` (lift-and-shift guide for other repos). Ready for testing in other projects.
+
+---
+
 # 2026-03-18
 
 ## frontend-1: Publishing Orchestra v2 — First Stable Site
