@@ -3,6 +3,32 @@
 Human decisions and reasoning. AI copilots are prohibited to edit this file.  
 
 ---
+
+## 2026-03-17
+
+Let's go back to designing Publishing Orchestra system. I created that frontend-1-map with Gemini help, but I don't like what it shows and how it captures the procedure and mental map of the process. 
+
+Materials:  
+
+- files in ./github/  
+- files in ./_frontend-1/ (currente example, not proscriptive)
+- analysis\frontend-1\initial.prompt.md - exmplifies how a human would start a conversation with Publishing Orchestrator to launch the production of _frontend-1
+ 
+File analysis\frontend-1\README.md should be renamed into ./github/publishing-orchestra-1.md, that content does not belng in ./analysis/frontend-1/. Instead a more generic README.md should be written for ./analysis/frontend-1/README.md that explains that this folder is used to capture design instructions and evolution of specifications during implementating this particular frontend. 
+
+Let's leave ./github/publishing-orchestra-1.md as is, and create ./github/publishing-orchestra-2.md that would capture the evolution of design of this agentic system. 
+
+Incorporate the following feedback from reviewing the first draft:
+
+- Publishing Publisher does not sound well and is somewhate misleading. A better name for this agent will be Publishing Printer. 
+- A good conceptual anchor will be three states of analytic content: Raw, Edited, Printed. Raw is the state of a GitHub repo at some point in time (usually identified by a commit hash), in includes a lot of drafts, ongoing works, experiments, internal reports. 
+- The main ./README.md tries to be useful landing page for developers and should be consulted for drafting the index page of /content produced by the editor. However, it's not suitable to use ./README.md as index page verbatim, human must be engaged to design the home page of the site. However, the main readme ./README.md should appear verbatim in the Docs section of the nav bar
+- In fact, it could be one of the interview questions/ decision point that the conversation with the Publishing Orchestrator should confirm: produce the default list of .md and .html files to be displayed/printed verbatim and which should be sources for editorilizing and synthesis. 
+- Publishing Editor must localize edited and human-approved contents that it creates to ./_frontend-N/content/ folder and nowhere else. If new files are to be created for the frontend-1, the Editor must create them in the ./_frontend-N/ and not the root of the project repository (source of RAW content)
+- Pay particular attention to understanding and explaining inputs and outputs and what agents and instructions were engaged to moderate these processes and tasks. 
+
+
+
 ## 2026-03-16
 
 Designed the first draft of the Publishing Orchestra using the artefacts created in a conversation with @oleksandkov. The prompt that launched an extensive interview with copilot is given below.
