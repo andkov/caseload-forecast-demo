@@ -1,0 +1,205 @@
+---
+title: "Data Primer — {NAME}"
+subtitle: "Canonical data documentation: Ellis outputs, schemas, variable reference"
+author: "Report Composer (Composing Orchestra)"
+date: last-modified
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-location: right
+    code-fold: show
+    theme: yeti
+    highlight-style: breeze
+    code-line-numbers: true
+    self-contained: true
+    embed-resources: true
+editor: visual
+editor_options:
+  chunk_output_type: console
+---
+
+<!-- Composing Orchestra data primer template.
+     Used for analysis/data-primer-1/ — the CENTRALIZED data reference for the project.
+     Composed once via @report-composer, verified by humans, linked by all EDAs and Reports.
+     Customize {PLACEHOLDERS} and populate sections from Ellis metadata + CACHE manifest. -->
+
+# Purpose
+
+This is the **canonical data primer** for the project. It provides the foundational documentation of all data assets produced by the Ellis lane. Every EDA and presentation Report in `analysis/` links here for data context.
+
+This primer answers: *What data do we have? What does it look like? What do the variables mean?*
+
+For domain terminology, see `ai/project/glossary.md`.
+
+```{r}
+#| code-summary: Reconciles working directory
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+cat("Working directory: ", getwd())
+library(knitr)
+opts_knit$set(root.dir='../../')
+```
+
+```{r}
+#| label: setup
+#| code-summary: Environment setup
+#| echo: false
+#| results: hide
+#| message: false
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(arrow)
+library(knitr)
+library(scales)
+
+opts_chunk$set(
+  results   = 'show',
+  message   = FALSE,
+  warning   = FALSE,
+  comment   = NA,
+  tidy      = FALSE,
+  out.width = "960px"
+)
+options(width = 100)
+```
+
+# Pipeline Architecture
+
+The data assets used in this project follow a three-stage provenance chain:
+
+```
+Source data (data-private/raw/)
+  → Ellis lane (manipulation/2-ellis.R)
+    → R-friendly parquet files (data-private/derived/)
+```
+
+**Ellis** imports raw source data, applies R-friendly type conversions (factors for categoricals, dates, integers for IDs), validates against the CACHE manifest, and outputs optimized parquet files.
+
+# Data Assets Inventory
+
+```{r}
+#| label: inventory
+#| code-summary: List available parquet files from Ellis output
+#| code-fold: true
+
+# List Ellis outputs
+ellis_path <- "./data-private/derived/"
+if (dir.exists(ellis_path)) {
+  parquet_files <- list.files(ellis_path, pattern = "\\.parquet$", full.names = TRUE, recursive = TRUE)
+  if (length(parquet_files) > 0) {
+    inventory <- data.frame(
+      File = basename(parquet_files),
+      Path = parquet_files,
+      stringsAsFactors = FALSE
+    )
+    # Read schema info for each file
+    inventory$Rows <- NA_integer_
+    inventory$Columns <- NA_integer_
+    for (i in seq_along(parquet_files)) {
+      tryCatch({
+        ds_temp <- arrow::read_parquet(parquet_files[i])
+        inventory$Rows[i] <- nrow(ds_temp)
+        inventory$Columns[i] <- ncol(ds_temp)
+      }, error = function(e) {
+        message("Could not read: ", parquet_files[i])
+      })
+    }
+    kable(inventory[, c("File", "Rows", "Columns")], caption = "Ellis Output: Analysis-Ready Parquet Files")
+  } else {
+    cat("No parquet files found in:", ellis_path, "\n")
+    cat("Run the Ellis lane first.\n")
+  }
+} else {
+  cat("Ellis output directory not found at:", ellis_path, "\n")
+  cat("Run the Ellis lane first.\n")
+}
+```
+
+# Table Schemas
+
+<!-- Customize these sections based on the actual Ellis outputs for this project.
+     Remove or add sections as needed to match the available parquet files. -->
+
+## Primary Dataset
+
+```{r}
+#| label: schema-primary
+#| code-summary: Primary dataset structure
+#| code-fold: true
+
+# Update path to match your project's actual Ellis output
+path_primary <- paste0(ellis_path, "{PRIMARY_TABLE}.parquet")
+if (file.exists(path_primary)) {
+  ds_primary <- arrow::read_parquet(path_primary)
+  cat("Grain: {GRAIN_DESCRIPTION}\n")
+  cat("Rows:", scales::comma(nrow(ds_primary)), "| Columns:", ncol(ds_primary), "\n\n")
+  glimpse(ds_primary)
+} else {
+  cat("File not found:", path_primary, "\n")
+}
+```
+
+# Grain Demonstration
+
+```{r}
+#| label: grain-check
+#| code-summary: Verify the grain of each table
+#| code-fold: true
+
+# Update grain check to match your project's key columns
+# if (exists("ds_primary") && is.data.frame(ds_primary)) {
+#   cat("--- Primary Dataset ---\n")
+#   n_total <- nrow(ds_primary)
+#   n_unique <- ds_primary %>% distinct({KEY_COL1}, {KEY_COL2}) %>% nrow()
+#   cat("Total rows:", scales::comma(n_total), "\n")
+#   cat("Unique {KEY_COL1} x {KEY_COL2}:", scales::comma(n_unique), "\n")
+#   cat("Grain holds (1:1):", n_total == n_unique, "\n\n")
+# }
+```
+
+# Single Record View
+
+```{r}
+#| label: single-record
+#| code-summary: What the data looks like for one representative record
+#| code-fold: true
+
+# Update to show a representative record from your primary dataset
+# if (exists("ds_primary") && is.data.frame(ds_primary)) {
+#   cat("=== Example record ===\n\n")
+#   ds_primary %>% slice_sample(n = 1) %>% glimpse()
+# }
+```
+
+# Variable Reference
+
+Key variables, sourced from `data-public/metadata/CACHE-manifest.md`:
+
+<!-- Populate this section during the adaptive interview with the @report-composer.
+     Update column names, types, and descriptions to match your actual dataset. -->
+
+## Identifiers
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `{id_col}` | {type} | {description} |
+
+## Key Dimensions
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `{dim_col}` | {type} | {description} |
+
+## Key Measures
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `{measure_col}` | {type} | {description} |
+
+# CACHE Manifest Summary
+
+For complete documentation of data coverage, quality metrics, and variable availability, see `data-public/metadata/CACHE-manifest.md`.
