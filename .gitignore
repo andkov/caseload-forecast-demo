@@ -126,6 +126,7 @@ analysis/*/*/*/*.jpg
 analysis/*/*/*/*.html
 
 analysis/workshop-1/*
+_frontend**/*
 
 !analysis/analysis-templatization/README.html
 # ---- Accidentally Added Code -------------------------------
@@ -141,3 +142,9 @@ analysis/workshop-1/*
 
 /.quarto/
 .copilot-persona
+caseload-forecast-demo.code-workspace
+.github/copilot-instructions.md
+
+
+/analysis/frontend*/*
+!analysis/frontend-1/*
