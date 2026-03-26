@@ -10,7 +10,7 @@ This repository implements a complete monthly caseload forecasting system for Al
 
 | Parameter | Value |
 |:---|:---|
-| **Data Source** | [Alberta Open Data – Income Support Caseload](https://open.alberta.ca/opendata/income-support-aggregated-caseload-data) |
+| **Data Source** | [Alberta Open Data – Income Support Caseload](https://open.alberta.ca/dataset/e1ec585f-3f52-40f2-a022-5a38ea3397e5/resource/4f97a3ae-1b3a-48e9-a96f-f65c58526e07) |
 | **Temporal Coverage** | April 2005 – September 2025 (246 months) |
 | **Focal Date** | `2025-09-01` (last month with observed data) |
 | **Forecast Horizon** | 24 months (October 2025 – September 2027) |
