@@ -2,7 +2,7 @@
 
 **End-to-end forecasting pipeline — from open data to 24-month projections.**
 
-This repository implements a complete monthly caseload forecasting system for Alberta's [Income Support](https://open.alberta.ca/opendata/income-support-aggregated-caseload-data) program. It ingests publicly available Government of Alberta data (April 2005 – September 2025, ~50,000 rows), transforms it through a six-stage reproducible pipeline, and produces a static HTML report with 24-month ARIMA forecasts and prediction intervals. The entire pipeline runs on-premises with a single command (`Rscript flow.R`) and is designed as the **cloud-agnostic core** for subsequent migration to Azure ML and Snowflake.
+This repository implements a complete monthly caseload forecasting system for Alberta's [Income Support](https://www.alberta.ca/income-support) program. It ingests publicly available Government of Alberta data (April 2005 – September 2025, ~50,000 rows), transforms it through a six-stage reproducible pipeline, and produces a static HTML report with 24-month ARIMA forecasts and prediction intervals. The entire pipeline runs on-premises with a single command (`Rscript flow.R`) and is designed as the **cloud-agnostic core** for subsequent migration to Azure ML and Snowflake.
 
 ---
 
