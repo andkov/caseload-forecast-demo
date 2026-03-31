@@ -39,8 +39,6 @@ The CSV file uses a **two-row header** pattern:
 - **Row 2** (column headers): `Ref_Date`, `Geography`, `Measure Type`, `Measure`, `Value` — followed by 9 trailing empty columns.
 - **Rows 3+** (data): One observation per row. Each row reports a single `(month × measure type × measure)` combination.
 
-The Ferry lane reads this file with `skip = 1` (skipping the title row) and selects only the 5 meaningful columns.
-
 ---
 
 ## Raw Column Schema
@@ -55,9 +53,9 @@ The Ferry lane reads this file with `skip = 1` (skipping the title row) and sele
 
 ### Notes on Raw Column Formats
 
-- **`ref_date`** uses a non-standard `YY-MMM` format requiring custom parsing. The two-digit year is unambiguous for this dataset (all dates fall within 2000–2099). Ellis parses this using `lubridate::parse_date_time(orders = "y-b")`.
-- **`value`** requires three cleaning steps: trimming whitespace, removing comma separators, and converting the suppression marker (`" -   "`) to `NA` before numeric conversion.
-- **Trailing empty columns**: The raw CSV has 13 columns total — 5 meaningful + 8 empty. The Ferry lane selects only the 5 named columns.
+- **`ref_date`** uses a non-standard `YY-MMM` format requiring custom parsing. The two-digit year is unambiguous for this dataset (all dates fall within 2000–2099).
+- **`value`** requires cleaning: trimming whitespace, removing comma separators, and handling the suppression marker (`" -   "`) which represents small counts protected for privacy.
+- **Trailing empty columns**: The raw CSV has 13 columns total — 5 meaningful + 8 empty.
 
 ---
 
@@ -74,7 +72,7 @@ The `Measure Type` column classifies each row into one of six reporting dimensio
 | `Average Age`        | 1,056    | Apr 2020 – Sep 2025| Caseload by client age group |
 | `Client Gender`      | 240      | Apr 2020 – Sep 2025| Caseload by self-identified gender |
 
-**Important**: From April 2012 onward, `Total Caseload` is no longer reported as a standalone measure type. The total for that period must be derived from the `"Client Caseload Total"` row within `Client Type Level`. The Ellis lane performs this reconciliation when building the unified `total_caseload` analysis table.
+**Important**: From April 2012 onward, `Total Caseload` is no longer reported as a standalone measure type. The total for that period must be derived from the `"Client Caseload Total"` row within `Client Type Level`.
 
 ---
 
@@ -96,7 +94,7 @@ Classifies clients by employment readiness and program designation. This dimensi
 | `ETW - Not Working (Available for Work) Total`   | ETW Available for Work          | ETW clients actively seeking employment and available for work |
 | `ETW - Not Working (Unavailable for Work) Total` | ETW Unavailable for Work        | ETW clients temporarily unable to work (short-term illness, caregiving, training) |
 | `BFE - Total`                                    | BFE                             | Clients with Barriers to Full Employment — significant long-term barriers (chronic health conditions, disabilities, complex life circumstances) |
-| `Client Caseload Total`                          | Total                           | Sum of all four client types — used by Ellis to reconstruct the provincial total from Apr 2012 onward |
+| `Client Caseload Total`                          | Total                           | Sum of all four client types — serves as the provincial total from Apr 2012 onward |
 
 **Client Type Definitions:**
 
@@ -195,21 +193,18 @@ Alberta's Income Support reporting progressively added dimensional breakdowns ov
 
 - **Issue**: The raw CSV contains two rows for November 2020 with `Measure Type = "Family Composition"` and `Measure = "All Types Total"`, reporting two different values: 48,850 (incorrect) and 44,850 (corrected).
 - **Cause**: Appears to be a correction published in a subsequent release, with the erroneous row left in the file.
-- **Resolution applied in Ellis**: The correction row (44,850) is retained; the erroneous row (48,850) is dropped during deduplication (`slice_tail(n=1)`).
 - **Affected raw rows**: 2 rows at `date = 2020-11-01`, `Measure Type = "Family Composition"`, `Measure = "All Types Total"`.
 
 ### 2. November 2020 — Average Age Total Mismatch
 
 - **Issue**: The `Average Age / All Ages Total` row for November 2020 reports 48,850, but the sum of all individual age-bin rows for that month is 23,480 — a discrepancy of ~25,000.
 - **Cause**: The `All Ages Total` value appears to be a data entry error (likely a transposition from the incorrect Family Composition total above).
-- **Resolution applied in Ellis**: A `data_quality_flag = "suspect_total"` is attached to this specific row. Downstream analysis uses the sum of age-bin components rather than the reported total.
 - **Affected raw row**: 1 row at `date = 2020-11-01`, `Measure Type = "Average Age"`, `Measure = "All Ages Total"`, `Value = " 48,850 "`.
 
 ### 3. Suppressed Values
 
 - **Pattern**: Small counts are privacy-protected by replacing the numeric value with `" -   "` (a hyphen with surrounding whitespace).
 - **Scope**: Primarily affects the `Other` gender category before August 2022, and occasional small-count regional or age-group cells.
-- **Resolution applied in Ellis**: Suppression markers are converted to `NA` (numeric missing value) for statistical use.
 - **Implication**: Sub-category totals may not sum precisely to the reported `Total` row for months with suppressed cells.
 
 ---
@@ -222,7 +217,7 @@ The dataset is publicly available through the Alberta Open Government Portal und
 
 **Portal page**: <https://open.alberta.ca/opendata/income-support-aggregated-caseload-data>
 
-**Direct CSV download** (used by `manipulation/1-ferry.R`):
+**Direct CSV download**:
 
 ```
 https://open.alberta.ca/dataset/e1ec585f-3f52-40f2-a022-5a38ea3397e5/resource/4f97a3ae-1b3a-48e9-a96f-f65c58526e07/download/is-aggregated-data-april-2005-sep-2025.csv
@@ -249,33 +244,9 @@ Conditions: Acknowledge the source (Government of Alberta) and note any modifica
 
 ---
 
-## Ferry Integration
-
-The Ferry lane ([`manipulation/1-ferry.R`](../../manipulation/1-ferry.R)) ingests this file from four equivalent sources:
-
-| Source     | Location | Notes |
-|:-----------|:---------|:------|
-| **URL**    | `https://open.alberta.ca/dataset/.../download/is-aggregated-data-april-2005-sep-2025.csv` | Live download from Open Alberta portal |
-| **CSV**    | `data-public/raw/is-aggregated-data-april-2005-sep-2025.csv` | Local cached copy for offline use |
-| **SQLite** | `data-public/raw/open-data-is-sep-2025.sqlite` | Pre-loaded SQLite backup |
-| **SQL Server** | DSN `RESEARCH_PROJECT_CACHE_UAT`, schema `AMLdemo` | Enterprise database path (optional) |
-
-All four sources are validated as **row-for-row identical** before writing output. The Ferry lane applies no semantic transformations — only column selection (`ref_date, geography, measure_type, measure, value`) and output to `data-private/derived/open-data-is-1.sqlite`.
-
----
-
 ## Pipeline Position
 
 This file is the **sole external data source** for the entire forecasting pipeline.
-
-```
-is-aggregated-data-april-2005-sep-2025.csv  (this file — INPUT)
-  └── 1-ferry.R       → open-data-is-1.sqlite  (raw staging)
-        └── 2-ellis.R → open-data-is-2-tables/ (11 analysis-ready Parquet tables)
-              └── [Mint → Train → Forecast → Report]
-```
-
-No other external data sources are used. All 11 analysis-ready tables in the CACHE ultimately trace back to this single CSV.
 
 ---
 
@@ -310,16 +281,4 @@ The following sources were consulted when compiling this manifest. Each source's
 7. **Raw CSV file (direct inspection)**
    - Path: `data-public/raw/is-aggregated-data-april-2005-sep-2025.csv`
    - Contribution: Column names, row counts, unique categorical values, date ranges per measure type, suppression pattern, two-row header structure, trailing empty columns
-
-8. **`manipulation/1-ferry.R`**
-   - Path: `manipulation/1-ferry.R`
-   - Contribution: Four-source ingestion approach, `skip=1` parameter, column selection pattern
-
-9. **`manipulation/2-ellis.R`**
-   - Path: `manipulation/2-ellis.R`
-   - Contribution: Date parsing method (`YY-MMM` format), value cleaning steps, Nov 2020 data quality issues, phase-based total reconstruction, measure cleaning recodes
-
-10. **`data-public/metadata/CACHE-manifest.md`**
-    - Path: `data-public/metadata/CACHE-manifest.md`
-    - Contribution: Temporal phase boundaries, regional definitions, age-bin granularity rationale, gender suppression timing
 
