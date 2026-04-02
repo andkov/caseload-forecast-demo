@@ -152,4 +152,4 @@ caseload-forecast-demo.code-workspace
 .copilot-persona
 .copilot-persona
 
-./dev/*
+dev/*
