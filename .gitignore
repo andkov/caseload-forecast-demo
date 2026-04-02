@@ -151,3 +151,5 @@ caseload-forecast-demo.code-workspace
 .github/copilot-instructions.md
 .copilot-persona
 .copilot-persona
+
+./dev/*
