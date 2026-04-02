@@ -148,3 +148,6 @@ caseload-forecast-demo.code-workspace
 
 /analysis/frontend*/*
 !analysis/frontend-1/*
+.github/copilot-instructions.md
+.copilot-persona
+.copilot-persona
