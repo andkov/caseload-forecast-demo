@@ -25,38 +25,9 @@ This repository implements a complete monthly caseload forecasting system for Al
 
 The system follows a **Ferry → Ellis → Mint → Train → Forecast → Report** pattern, adapted from [RAnalysisSkeleton](https://github.com/wibeasley/RAnalysisSkeleton). Each stage is a self-contained R script orchestrated by [`flow.R`](flow.R).
 
-```mermaid
-flowchart LR
-    subgraph "Data Ingestion"
-        A["1-ferry.R<br/><i>Import</i>"]
-    end
-    subgraph "Transformation"
-        B["2-ellis.R<br/><i>Clean & Shape</i>"]
-    end
-    subgraph "Advisory"
-        C["eda-2.qmd<br/><i>Diagnostics</i>"]
-    end
-    subgraph "Modeling"
-        D["3-mint-IS.R<br/><i>Prepare</i>"]
-        E["4-train-IS.R<br/><i>Estimate</i>"]
-        F["5-forecast-IS.R<br/><i>Predict</i>"]
-    end
-    subgraph "Delivery"
-        G["report-1.qmd<br/><i>Report</i>"]
-    end
+![Pipeline Architecture](libs/images/pipeline-architecture.jpg)
 
-    A --> B --> C
-    B --> D --> E --> F --> G
-    C -.->|informs| D
-
-    style A fill:#4a90d9,color:#fff
-    style B fill:#4a90d9,color:#fff
-    style C fill:#f5a623,color:#fff
-    style D fill:#7b68ee,color:#fff
-    style E fill:#7b68ee,color:#fff
-    style F fill:#7b68ee,color:#fff
-    style G fill:#50c878,color:#fff
-```
+> Diagram source: [manipulation/pipeline.md](manipulation/pipeline.md) — render with `Rscript utility/render-pipeline-diagram.R`
 
 ### Pipeline Stages
 
