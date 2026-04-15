@@ -10,9 +10,8 @@ Core R scripts that power the AI support system for reproducible research projec
 |--------|---------|
 | **ai-config-utils.R** | Centralized configuration management for AI system paths and settings |
 | **ai-memory-functions.R** | Portable memory system functions for tracking decisions and project state |
-| **ai-migration-toolkit.R** | Portable persona switching and cross-repository migration utilities |
 | **dynamic-context-builder.R** | Comprehensive context management engine for AI assistant customization |
-| **migration-utilities.R** | Export/import tools for migrating AI support systems between repositories |
+| **migration-utilities.R** | Lightweight validation and backup helpers for ai/ migration (see `ai/migration.md`) |
 
 ---
 
@@ -35,39 +34,18 @@ Provides centralized configuration reading functions used by all other AI script
 ### ai-memory-functions.R
 **Memory System Logic Layer**
 
-Implements portable memory management functions following a storage/logic separation pattern. Provides tools for tracking project decisions, AI system status, and human reasoning across research workflows. Works with project-specific memory files (memory-ai.md, memory-human.md, memory-hub.md) while keeping logic portable for reuse across repositories.
+Implements portable memory management functions following a storage/logic separation pattern. Provides tools for tracking project decisions, AI system status, and human reasoning across research workflows. Works with project-specific memory files (memory-ai.md, memory-human.md) while keeping logic portable for reuse across repositories.
 
 **Key Functions:**
-- `ai_memory_check()` - Comprehensive memory system status check
+
 - `memory_status()` - Quick memory file status overview
 - `detect_memory_system()` - Auto-detect memory configuration
-- Memory file reading and validation utilities
+- `simple_memory_update()` - Add entry to AI memory
+- `human_memory_update()` - Add entry to human decision memory
+- `quick_intent_scan()` - Scan for TODO/FIXME patterns
+- `initialize_memory_system()` - Create memory structure
 
 **Version:** 1.0.0 - Designed for storage/logic separation
-
----
-
-### ai-migration-toolkit.R
-**Portable Persona Switching & Migration**
-
-Lightweight, portable toolkit for activating AI personas and migrating AI support systems to other repositories. Designed for cross-repository deployment with automatic configuration detection and fallback mechanisms. Provides the core persona switching functions used by VS Code tasks and migration workflows.
-
-**Key Functions:**
-- `activate_developer()` - Technical focus, minimal context
-- `activate_project_manager()` - Strategic oversight, full context
-- `activate_data_engineer()` - Data pipeline specialist
-- `activate_research_scientist()` - Statistical analysis specialist
-- `activate_devops_engineer()` - Production deployment focus
-- `activate_frontend_architect()` - Visualization and UI specialist
-- `activate_prompt_engineer()` - RICECO framework specialist
-- `activate_reporter()` - Analytical storytelling specialist
-- `activate_default()` - General assistance
-- `show_context_status()` - Display current AI configuration
-- `detect_ai_config()` - Auto-detect project AI system type
-- `check_migration_compatibility()` - Assess target repository readiness
-- `generate_migration_assessment()` - Create detailed migration impact report
-
-**Version:** 1.0.0 - Designed for portability and cross-repository deployment
 
 ---
 
@@ -91,7 +69,8 @@ Clean, simplified AI context management system implementing a pure 3-section arc
 - `activate_frontend_architect()` - Visualization specialist
 - `activate_prompt_engineer()` - Prompt engineering specialist
 - `activate_reporter()` - Analytical storytelling
-- `activate_casenote_analyst()` - Domain-specific analyst
+- `activate_grapher()` - Graph design specialist
+- `activate_presenter()` - Presentation specialist
 - `activate_default()` - General assistance
 
 *Context Management:*
@@ -125,44 +104,19 @@ Clean, simplified AI context management system implementing a pure 3-section arc
 ---
 
 ### migration-utilities.R
-**Export/Import Infrastructure**
 
-High-level export and import tools for packaging and deploying AI support systems across repositories. Provides assessment-based migration with dry-run capabilities, automatic conflict detection, and backup/restore functionality. Designed for both manual and AI-assisted migration workflows.
+**Migration Validation & Backup Helpers**
+
+Lightweight utility functions that support the ai/ migration workflow described in `ai/migration.md`. These are helper functions — not the migration engine. The AI agent (or human) drives the workflow; these functions assist with validation and safety.
 
 **Key Functions:**
 
-*Export:*
-- `export_ai_components()` - Package AI components for migration
-- `export_component()` - Export individual component (personas, context, memory, vscode)
-- `export_personas()` - Export persona definition files
-- `export_context_management()` - Export context scripts
-- `export_memory_system()` - Export memory functions and templates
-- `export_vscode_integration()` - Export VS Code task templates
+- `validate_ai_structure(path)` - Check that a directory has expected ai/ subdirectories and key files
+- `list_ai_components(path)` - Enumerate ai/ subdirectories with file counts and sizes
+- `create_migration_backup(path)` - Create timestamped backup of ai/ before changes
+- `restore_from_backup(backup_path, target_path)` - Rollback: restore ai/ from a backup
 
-*Import:*
-- `import_ai_components()` - Import and install AI components
-- `execute_manual_import()` - Manual import workflow
-- `execute_ai_assisted_import()` - AI-assisted import workflow
-
-*Assessment:*
-- `generate_import_assessment()` - Mandatory pre-import assessment
-- `print_import_assessment()` - Display assessment results
-- `confirm_import_after_assessment()` - User confirmation prompt
-- `detect_import_conflicts()` - Identify potential conflicts
-- `estimate_component_changes()` - Estimate file changes per component
-
-*Validation:*
-- `validate_source_structure()` - Verify source has valid AI system
-- `analyze_target_structure()` - Analyze target repository structure
-- `validate_import()` - Post-import validation
-
-*Backup:*
-- `create_import_backup()` - Create timestamped backup
-- `restore_from_backup()` - Rollback failed import
-
-**Version:** 1.0.0 - Manual and AI-assisted migration support
-
-**Dependencies:** Requires `yaml` and `jsonlite` packages
+**No external dependencies** (base R only)
 
 ---
 
@@ -171,9 +125,8 @@ High-level export and import tools for packaging and deploying AI support system
 ```
 ai-config-utils.R (foundation)
     ├── ai-memory-functions.R (uses config utils)
-    ├── ai-migration-toolkit.R (uses config utils in dynamic-context-builder)
     ├── dynamic-context-builder.R (uses config utils)
-    └── migration-utilities.R (independent, uses yaml/jsonlite)
+    └── migration-utilities.R (standalone, base R only)
 ```
 
 ## Usage Patterns
@@ -186,11 +139,12 @@ Use **dynamic-context-builder.R** for:
 - Validating context freshness
 
 ### Cross-Repository Migration
-Use **ai-migration-toolkit.R** + **migration-utilities.R** for:
-- Portable persona switching
-- Exporting AI components
-- Assessing target repositories
-- Importing AI support to new projects
+
+Use **ai/migration.md** (read by AI agent or human) + **migration-utilities.R** helpers for:
+
+- Comparing source and target ai/ directories
+- Proposing and reviewing changes before applying
+- Backing up and restoring ai/ during migration
 
 ### Memory Tracking
 Use **ai-memory-functions.R** for:
@@ -208,17 +162,10 @@ All scripts use **ai-config-utils.R** for:
 
 ## Related Resources
 
-- **Subdirectories:**
-  - `tests/` - Test suites for AI system validation
-  - `wrappers/` - VS Code task wrapper scripts
-
 - **Documentation:**
-  - `../docs/commands.md` - Command reference
   - `../docs/context-system.md` - Context system guide
-  - `../docs/testing-guide.md` - Testing documentation
 
 - **Configuration:**
-  - `../ai-support-config.yml` - AI system configuration
   - `../../config.yml` - Main project configuration
 
 ---
