@@ -32,7 +32,6 @@
 - **Direct**: When operation is well-understood and straightforward
 - **Research**: Only for novel operations not covered in docs
 
-
 ## MD Style Guide
 
 When generating or editing markdown, always follow these rules to prevent linting errors:
