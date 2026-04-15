@@ -1,4 +1,4 @@
-# AI Scripts Directory
+﻿# AI Scripts Directory
 
 Core R scripts that power the AI support system for reproducible research projects.
 
@@ -18,11 +18,13 @@ Core R scripts that power the AI support system for reproducible research projec
 ## Detailed Descriptions
 
 ### ai-config-utils.R
+
 **Configuration Management Foundation**
 
 Provides centralized configuration reading functions used by all other AI scripts. Reads from `config.yml` with intelligent fallbacks and sensible defaults for AI system paths (personas, memory, project directories). This eliminates hardcoded paths and ensures portability across different project structures. All other scripts depend on this utility for consistent path resolution.
 
 **Key Functions:**
+
 - `read_ai_config()` - Main configuration reader
 - `get_ai_file_path()` - Resolve AI system file paths
 - `get_persona_path()` - Locate persona definition files
@@ -32,6 +34,7 @@ Provides centralized configuration reading functions used by all other AI script
 ---
 
 ### ai-memory-functions.R
+
 **Memory System Logic Layer**
 
 Implements portable memory management functions following a storage/logic separation pattern. Provides tools for tracking project decisions, AI system status, and human reasoning across research workflows. Works with project-specific memory files (memory-ai.md, memory-human.md) while keeping logic portable for reuse across repositories.
@@ -50,17 +53,19 @@ Implements portable memory management functions following a storage/logic separa
 ---
 
 ### dynamic-context-builder.R
+
 **3-Section Context Management System**
 
 Clean, simplified AI context management system implementing a pure 3-section architecture:
 
-**Section 1:** Core AI Instructions (from `ai/core/base-instructions.md`) - manually edited in copilot-instructions.md  
-**Section 2:** Active Persona (from `ai/personas/*.md`) - loaded verbatim on activation  
+**Section 1:** Core AI Instructions (from `ai/core/base-instructions.md`) - manually edited in copilot-instructions.md
+**Section 2:** Active Persona (from `ai/personas/*.md`) - loaded verbatim on activation
 **Section 3:** Additional Context (project docs) - A) default per persona OR B) manually added
 
 **Key Functions:**
 
 *Persona Management (Primary Interface):*
+
 - `activate_developer()` - Minimal context
 - `activate_project_manager()` - Full project context (mission, method, glossary)
 - `activate_data_engineer()` - Data pipeline specialist
@@ -74,12 +79,14 @@ Clean, simplified AI context management system implementing a pure 3-section arc
 - `activate_default()` - General assistance
 
 *Context Management:*
+
 - `show_context_status()` - View current 3-section state
 - `add_context_file('path/file.md')` - Add document to Section 3
 - `remove_context_file('path/file.md')` - Remove document from Section 3
 - `list_available_md_files('pattern')` - Discover available markdown files
 
 *Core Engine (Internal):*
+
 - `build_3_section_instructions()` - Assemble complete instruction file
 - `set_persona_with_defaults()` - Activate persona with default context
 - `get_file_map()` - File path resolution mapping
@@ -93,6 +100,7 @@ Clean, simplified AI context management system implementing a pure 3-section arc
 **Function Count:** 18 functions (down from 38 in v1.x = 53% reduction)
 
 **Key Improvements:**
+
 - Pure 3-section architecture (eliminated dual-system confusion)
 - Section 1 now file-based (reads from ai/core/base-instructions.md)
 - Simplified user interface (clear command patterns)
@@ -132,7 +140,9 @@ ai-config-utils.R (foundation)
 ## Usage Patterns
 
 ### Daily Workflow
+
 Use **dynamic-context-builder.R** for:
+
 - Loading and managing AI context
 - Switching personas with rich features
 - Analyzing project status
@@ -147,13 +157,17 @@ Use **ai/migration.md** (read by AI agent or human) + **migration-utilities.R** 
 - Backing up and restoring ai/ during migration
 
 ### Memory Tracking
+
 Use **ai-memory-functions.R** for:
+
 - Checking memory system status
 - Validating memory file structure
 - Tracking decisions and reasoning
 
 ### Configuration
+
 All scripts use **ai-config-utils.R** for:
+
 - Consistent path resolution
 - Configuration reading
 - Portable directory detection
