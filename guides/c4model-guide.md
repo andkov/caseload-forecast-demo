@@ -86,7 +86,7 @@ The C4 model was designed for **software systems** — applications with APIs, d
 C4 diagrams show **structural containment** (what is inside what) and **dependencies** (what calls what). They do not natively represent:
 
 - **Data lineage**: Which script produced which artifact, and which downstream script consumes it.
-- **Schema evolution**: How the data shape changes from raw CSV (50,000 rows, wide format) through Ellis (11 tables, long + wide) to Mint (train/test splits, xreg matrices) to Forecast (point estimates + intervals).
+- **Schema evolution**: How the data shape changes from raw CSV (monthly aggregates, wide format) through Ellis (11 tables, long + wide) to Mint (train/test splits, xreg matrices) to Forecast (point estimates + intervals).
 - **Versioning bonds**: The `forge_hash` chain that links Mint → Train → Forecast artifacts.
 
 This repository already has a lineage model (`forge_manifest.yml` → model registry → forecast manifest) that is better described by a **data lineage diagram** than by any C4 level.
