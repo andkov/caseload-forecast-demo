@@ -7,19 +7,23 @@ Core terms for standardizing project communication.
 ## Data Pipeline Terminology
 
 ### Pattern
-A reusable solution template for common data pipeline tasks. Patterns define the structure, philosophy, and constraints for a category of operations. The project uses six patterns: Ferry, Ellis, Mint, Train, Forecast, Report.
+
+A reusable solution template for common data pipeline tasks. Patterns define the structure, philosophy, and constraints for a category of operations. Examples: Ferry Pattern, Ellis Pattern.
 
 ### Lane
-A specific implementation instance of a pattern within a project. A lane may be implemented as a single script or a group of scripts operating within the same pattern. Lanes are numbered to indicate approximate execution order across the full pipeline. Examples: `1-ferry.R`, `2-ellis.R`, `3-mint-IS.R`, `4-train-arima.R`, `5-forecast-IS.R`, `6-report-IS.qmd`.
+
+A specific implementation instance of a pattern within a project. Lanes are numbered to indicate approximate execution order. Examples: `0-ferry-IS.R`, `1-ellis-customer.R`, `3-ferry-LMTA.R`.
 
 ### Ferry Pattern
-Data transport pattern that moves data between storage locations with minimal/zero semantic transformation. Like a "cargo ship" - carries data intact. 
+
+Data transport pattern that moves data between storage locations with minimal/zero semantic transformation. Like a "cargo ship" - carries data intact.
 - **Allowed**: SQL filtering, SQL aggregation, column selection
 - **Forbidden**: Column renaming, factor recoding, business logic
 - **Input**: External databases, APIs, flat files
 - **Output**: CACHE database (staging schema), parquet backup
 
 ### Ellis Pattern
+
 Data transformation pattern that creates clean, analysis-ready datasets. Named after Ellis Island - the immigration processing center where arrivals are inspected, documented, and standardized before entry.
 - **Required**: Name standardization, factor recoding, data type verification, missing data handling, derived variables
 - **Includes**: Minimal EDA for validation (not extensive exploration)
@@ -28,6 +32,7 @@ Data transformation pattern that creates clean, analysis-ready datasets. Named a
 - **Documentation**: Generates CACHE-manifest.md
 
 ### Mint Pattern
+
 Model-ready data preparation pattern that shapes Ellis output into standardized artifacts consumed by Train lanes. Named for coin minting — producing a standardized artifact of exact specification from refined material.
 - **Applies**: Train/test split (keyed to `focal_date`), log transforms, xreg matrix construction, temporal subsetting
 - **Codifies**: EDA-confirmed analytical decisions (e.g., log transform, seasonal period, differencing order)
@@ -41,6 +46,7 @@ Model-ready data preparation pattern that shapes Ellis output into standardized 
 - **Documentation**: Generates forge_manifest.yml
 
 ### Train Pattern
+
 Model estimation pattern that fits statistical models and evaluates diagnostic quality. Each Train lane consumes Mint artifacts only — never Ellis output directly.
 - **Process**: Estimate model parameters on training slice, evaluate fit diagnostics, backtest on held-out window
 - **Input**: Mint artifacts (`ds_*.parquet`, `xreg_*.parquet`, `forge_manifest.yml`); reconstruct `ts` objects on load
@@ -48,6 +54,7 @@ Model estimation pattern that fits statistical models and evaluates diagnostic q
 - **Versioning**: Each model links to its `forge_manifest.yml` via `forge_hash` in the model registry
 
 ### Forecast Pattern
+
 Prediction generation pattern that produces forward-looking forecasts from Train model objects.
 - **Process**: Apply fitted model to full series, generate point forecasts + prediction intervals for configured horizon
 - **Input**: Train model `.rds` + Mint `ds_full.parquet` for forward projection (reconstruct `ts_full` on load)
@@ -55,12 +62,14 @@ Prediction generation pattern that produces forward-looking forecasts from Train
 - **Horizon**: Configured in `config.yml` (default: 24 months from `focal_date`)
 
 ### Report Pattern
+
 Final deliverable assembly pattern that combines EDA, model performance, and forecasts into publication-ready output.
 - **Input**: EDA reports, Train performance metrics, Forecast outputs
 - **Output**: Static HTML report for stakeholder delivery
 - **Delivery**: SharePoint/network drive (Phase 1); cloud-hosted web app with identity-provider auth (Phase 2; e.g., Azure Static Web Apps + Entra ID, Snowflake Streamlit)
 
 ### EDA (Exploratory Data Analysis)
+
 Exploratory analysis that operates on Ellis output. EDA is **not a numbered lane** in the pipeline — it is a lateral analytical activity that produces reports and insight, not data artifacts consumed by downstream scripts. EDA findings are codified as documented decisions in Mint scripts (e.g., `[EDA-001] Log transform: TRUE`).
 
 ---
@@ -79,6 +88,7 @@ Ellis output → [EDA insight] → Mint → Train → Forecast
 ```
 
 ### Forge Manifest
+
 YAML file (`forge_manifest.yml`) documenting the data contract between Mint and Train: `focal_date`, split date, transform decisions (log, seasonal period), row counts, and EDA decision references. Analogous to CACHE-manifest for Ellis, but for model-ready artifacts.
 
 ---
@@ -86,12 +96,14 @@ YAML file (`forge_manifest.yml`) documenting the data contract between Mint and 
 ## Storage Layers
 
 ### CACHE
+
 Intermediate database storage - the last stop before analysis. Contains multiple schemas:
 - **Staging schema** (`{project}_staging` or `_TEST`): Ferry deposits raw data here
 - **Project schema** (`P{YYYYMMDD}`): Ellis writes analysis-ready data here
 - Both Ferry and Ellis write to CACHE, but to different schemas with different purposes.
 
 ### WAREHOUSE
+
 Long-term archival database storage. Only Ellis writes here after data pipelines are stabilized and verified. Used for reproducibility and historical preservation.
 
 ---
@@ -138,36 +150,47 @@ YAML file (`./data-private/derived/forge/forge_manifest.yml`) documenting model-
 ## Forecasting Terminology
 
 ### Forecast Horizon
+
 The number of time steps ahead for which predictions are generated. This project uses a **24-month horizon** (2 years forward from `focal_date`).
 
 ### Focal Date
+
 The reference date representing the "present" for analysis purposes. Typically the last month with observed data. Configured in `config.yml` as `focal_date`.
 
 ### Train/Test Split
+
 Division of historical data into:
+
 - **Training set**: Used to estimate model parameters (all data up to `focal_date - 24 months`)
 - **Test set**: Held-out data for backtesting model performance (last 24 months before `focal_date`)
 
 ### Backtesting
+
 Retrospective evaluation of forecast accuracy by pretending past data points are "future" and comparing predictions to actuals.
 
 ### Model Tier
+
 Classification of forecasting models by complexity:
+
 1. **Naive baseline**: Simple benchmark (last value carried forward)
 2. **ARIMA**: Autoregressive integrated moving average (univariate time series model)
 3. **Subgroup disaggregation**: Fit the same model independently for each client-type caseload series, then sum. Tests whether bottom-up forecasting outperforms aggregate-level modeling. Client type classifies the social service (ETW, BFE, AISH, etc.) — individuals may transition between types, but each subgroup's caseload has its own dynamics.
 4. **ARIMA + time-varying predictor**: Includes dynamic covariate (e.g., economic indicator)
 
 ### Prediction Interval
+
 Range around point forecast representing uncertainty. Commonly 80% and 95% intervals (wider = more conservative).
 
 ### Point Forecast
+ 
 Single "best guess" predicted value (typically the mean or median of the forecast distribution).
 
 ### Stationarity
+
 A time series property where statistical properties (mean, variance, autocorrelation) are constant over time. ARIMA models require stationarity, often achieved via differencing.
 
 ### Seasonality
+
 Regular, predictable patterns that repeat over fixed periods (e.g., monthly cycles, fiscal year effects).
 
 ---
@@ -175,33 +198,43 @@ Regular, predictable patterns that repeat over fixed periods (e.g., monthly cycl
 ## Cloud ML Terminology
 
 ### Cloud ML Platform
+
 Managed cloud service for end-to-end machine learning workflows: data prep, model training, deployment, and MLOps. Examples: Azure Machine Learning (AML), Snowflake ML, AWS SageMaker, GCP Vertex AI.
 
 ### Compute Instance
+
 Managed cloud VM or virtual warehouse for development work (Jupyter notebooks, VS Code remote, Snowflake worksheets). Billed per hour or per credit when running. Examples: Azure `Standard_DS3_v2`, Snowflake `X-Small` warehouse.
 
 ### Compute Cluster
+
 Scalable pool of compute resources for distributed training or batch inference. Auto-scales from 0 to N nodes/credits based on workload. Examples: Azure ML compute clusters, Snowflake multi-cluster warehouses.
 
 ### Workspace
+
 Top-level cloud ML resource that groups models, datasets, compute, and experiments. Allows resource isolation and access control across teams/projects. Examples: Azure ML Workspace, Snowflake Database/Schema.
 
 ### Model Registry
+
 Centralized catalog of trained models with versioning, metadata, and lineage tracking. Enables A/B testing and rollback. Examples: Azure ML Model Registry, Snowflake Model Registry, MLflow Model Registry.
 
 ### MLflow
+
 Open-source framework for tracking experiments, packaging models, and ensuring portability across platforms. Vendor-neutral — supported by Azure ML, Snowflake, Databricks, and others.
 
 ### Endpoint
+
 Deployed model as a REST API or serving layer for real-time or batch inference. Can route traffic across multiple model versions (blue-green deployment). Examples: Azure ML endpoints, Snowflake Model Serving.
 
 ### Blue-Green Deployment
+
 Strategy for testing new model versions in production by gradually shifting traffic from old (blue) to new (green) and monitoring performance before full cutover.
 
 ### Pipeline (Cloud ML)
+
 Directed acyclic graph (DAG) of processing steps (data prep → training → evaluation → deployment). Parameterized and schedulable. Examples: Azure ML Pipelines, Snowflake Tasks, Apache Airflow DAGs.
 
 ### Auto ML
+
 Cloud ML platform feature that automatically tries multiple algorithms and hyperparameters to find the best model for a given dataset and metric. Available in Azure ML, Snowflake ML (via Snowpark ML), and other platforms.
 
 ---
@@ -209,27 +242,35 @@ Cloud ML platform feature that automatically tries multiple algorithms and hyper
 ## SDA Domain Terms
 
 ### Caseload
+
 Number of active clients receiving services at a given point in time. For Income Support: count of individuals/families with open cases in a specific month.
 
 ### Intake
+
 New clients entering the program in a given period (e.g., monthly new applications approved).
 
 ### Exit
+
 Clients leaving the program in a given period (case closures, eligibility expiry).
 
 ### Fiscal Year (Alberta)
+
 April 1 to March 31. Example: **FY 2025-26** runs from April 1, 2025 to March 31, 2026.
 
 ### Income Support (IS)
+
 Alberta government program providing financial assistance to Albertans in need. Part of Social Development portfolio.
 
 ### Strategic Data Analytics (SDA)
+
 Government of Alberta team responsible for analytics, forecasting, and reporting for social programs.
 
 ### GoA (Government of Alberta)
+
 Provincial government; context for data security, identity-provider authentication, and report distribution policies.
 
 ### Cloud Identity Provider
+
 Cloud-based identity and access management service used for single sign-on and access control to organizational resources. Primary example: **Microsoft Entra ID** (formerly Azure Active Directory / AAD). Snowflake uses its own RBAC system and can federate with external identity providers.
 
 ---

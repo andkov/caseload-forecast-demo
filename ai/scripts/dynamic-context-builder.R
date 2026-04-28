@@ -48,7 +48,6 @@ get_file_map <- function() {
     # Other project files (examples)
     "semiology" = "./philosophy/semiology.md",
     "input-manifest" = "./data-public/metadata/INPUT-manifest.md",
-    "rdb-manifest" = "./data-public/metadata/RDB-manifest.md",
     "cache-manifest" = "./data-public/metadata/CACHE-manifest.md"  )
 }
 
@@ -77,7 +76,7 @@ get_persona_configs <- function() {
     ),
     "data-engineer" = list(
       file = get_persona_path("data-engineer.md"),
-      default_context = c("cache-manifest", "project/mission", "project/method", "project/glossary")
+      default_context = c("cache-manifest","project/glossary")
     ),
     "research-scientist" = list(
       file = get_persona_path("research-scientist.md"),
@@ -106,6 +105,10 @@ get_persona_configs <- function() {
     "grapher" = list(
       file = get_persona_path("grapher.md"),
       default_context = c("project/glossary", "project/mission", "project/method")
+    ),
+    "presenter" = list(
+      file = get_persona_path("presenter.md"),
+      default_context = c()
     )
   )
 }
@@ -592,10 +595,6 @@ activate_project_manager <- function() {
   set_persona_with_defaults("project-manager")
 }
 
-activate_casenote_analyst <- function() {
-  set_persona_with_defaults("casenote-analyst")
-}
-
 activate_prompt_engineer <- function() {
   set_persona_with_defaults("prompt-engineer")
 }
@@ -608,15 +607,17 @@ activate_grapher <- function() {
   set_persona_with_defaults("grapher")
 }
 
+activate_presenter <- function() {
+  set_persona_with_defaults("presenter")
+}
+
 # ==============================================================================
 # AI MEMORY SYSTEM INTEGRATION
 # ==============================================================================
 
 # Load AI Memory System if available
-if (file.exists("./scripts/ai-memory-functions-core.R")) {
-  source("./scripts/ai-memory-functions-core.R")
-} else if (file.exists("./scripts/ai-memory-functions.R")) {
-  source("./scripts/ai-memory-functions.R")
+if (file.exists("ai/scripts/ai-memory-functions.R")) {
+  source("ai/scripts/ai-memory-functions.R")
 }
 
 # ==============================================================================
