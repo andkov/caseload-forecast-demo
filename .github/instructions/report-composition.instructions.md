@@ -14,13 +14,33 @@ These rules apply to all analytical content in `analysis/`. They codify the conv
 
 Every analysis consists of an `.R` script and a `.qmd` document:
 
-- **`.R` script** = analytical laboratory. All exploration, data wrangling, and visualization development happens here. Use `ggsave()` to save plots. No `print()` statements for display.
-- **`.qmd` document** = publication layer. Sources chunks from the `.R` script via `read_chunk()`. Uses `print(plot_object)` for HTML rendering. Provides narrative context around visualizations.
+- **`.R` script** = analytical laboratory. All exploration, data wrangling, and visualization development happens here. Use `print()` for interactive display and Quarto rendering, plus `ggsave()` to save plots to disk.
+- **`.qmd` document** = publication layer. Sources chunks from the `.R` script via `read_chunk()`. Chunk bodies remain **empty** — the `print()` statement in the sourced R chunk executes automatically during rendering. Provides narrative context around visualizations.
 - **Synchronization**: When creating a new chunk in `.R`, create the corresponding `.qmd` chunk reference. Chunk names must match exactly between files.
 
 ```r
 # In .R script setup, register chunks:
 read_chunk("analysis/eda-N/eda-N.R")
+```
+
+## R Script Structure Conventions
+
+Every `.R` script uses two levels of structural markers:
+
+- **CHUNKS** — named with `# ---- chunk-name ----` (lowercase-hyphen). One chunk = one idea: data prep, one graph, or one table. Chunk names never change once assigned (graph numbers are stable).
+- **SECTIONS** — named with `# ---- SECTION: Title ----` (all-caps `SECTION:` prefix). Mark logical groups of related chunks (e.g., attrition, year-0 profile). Collapsible in RStudio (Alt+O to fold all). A plain-comment description goes immediately below the header.
+- **No decorative borders**: Never use `# ===...===` or similar ornamental comment lines anywhere in the script.
+
+```r
+# ---- SECTION: Attrition Narration -------------------------------------------
+# Two-stage reduction to the incident cohort.
+# Stage 0 — SIN-linkable; Stage 1 — Left-truncation (first record ≥ 2013).
+
+# ---- attrition-stage0 --------------------------------------------------------
+# ... chunk code ...
+
+# ---- attrition-stage1 --------------------------------------------------------
+# ... chunk code ...
 ```
 
 ## Graph Family Protocol
@@ -142,8 +162,9 @@ if (requireNamespace("pkg", quietly = TRUE)) { library(pkg) }
 #| cache: true
 #| fig-cap: "Caption describing the visualization"
 #| code-fold: true
-print(g21_plot)
 ```
+
+**Note**: The chunk body is empty. The `print()` statement lives in the sourced R chunk and executes automatically when Quarto renders via `read_chunk()`. See [analysis/eda-1/eda-style-guide.md](../analysis/eda-1/eda-style-guide.md) for detailed rationale.
 
 ## Quality Standards
 
