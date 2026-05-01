@@ -6,6 +6,12 @@ This repository implements a complete monthly caseload forecasting system for Al
 
 ---
 
+## Workshop
+
+- **2026-05-05** — Workshop participants: the session works with the repo in the state of commit [834a5df](https://github.com/andkov/caseload-forecast-demo/archive/834a5df.zip). Download the zip, unzip, and open in VS Code.
+
+---
+
 ## At a Glance
 
 | Parameter | Value |
