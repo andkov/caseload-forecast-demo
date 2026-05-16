@@ -31,9 +31,10 @@ This repository implements a complete monthly caseload forecasting system for Al
 
 The system follows a **Ferry → Ellis → Mint → Train → Forecast → Report** pattern, adapted from [RAnalysisSkeleton](https://github.com/wibeasley/RAnalysisSkeleton). Each stage is a self-contained R script orchestrated by [`flow.R`](flow.R).
 
+<!-- PIPELINE-DIAGRAM -->
 ![Pipeline Architecture](libs/images/pipeline-architecture.jpg)
 
-> Diagram source: [manipulation/pipeline.md](manipulation/pipeline.md) — render with `Rscript utility/render-pipeline-diagram.R`
+> Diagram source: [manipulation/pipeline.md](manipulation/pipeline.md) — render with the **Render Pipeline Diagram** VS Code task or `Rscript utility/render-pipeline-diagram.R`
 
 ### Pipeline Stages
 

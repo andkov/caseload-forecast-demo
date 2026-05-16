@@ -420,6 +420,23 @@
 			"dependsOn": ["Run Report Lane 1 (R Script)"]
 		},
 		{
+			"label": "Render Pipeline Diagram",
+			"detail": "Render manipulation/pipeline/pipeline.mmd to PNG + JPG, then report <!-- PIPELINE-DIAGRAM --> insertion sites",
+			"type": "shell",
+			"command": "Rscript",
+			"args": [
+				"utility/render-pipeline-diagram.R"
+			],
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
 			"label": "Open Site in Browser",
 			"detail": "Open _site/index.html in the default browser",
 			"type": "shell",

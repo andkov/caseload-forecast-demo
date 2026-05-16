@@ -19,6 +19,7 @@ This document complements the architecture summary in the [main README](../READM
 
 The system follows a **Ferry → Ellis → Mint → Train → Forecast → Report** pattern, adapted from [RAnalysisSkeleton](https://github.com/wibeasley/RAnalysisSkeleton). Each stage is a self-contained R/Quarto script orchestrated by [`flow.R`](../flow.R).
 
+<!-- PIPELINE-DIAGRAM-SOURCE -->
 ```mermaid
 flowchart LR
     subgraph "Data Ingestion"
@@ -51,6 +52,8 @@ flowchart LR
     style F fill:#7b68ee,color:#fff
     style G fill:#50c878,color:#fff
 ```
+
+> Rendered to `libs/images/pipeline-architecture.jpg` — run the **Render Pipeline Diagram** VS Code task or `Rscript utility/render-pipeline-diagram.R`
 
 ### Pipeline Stages
 
