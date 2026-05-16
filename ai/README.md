@@ -158,6 +158,31 @@ migrate_ai_support(
 4. **Install**: Execute migration with chosen method
 5. **Validate**: Confirm all components work in target environment
 
+## Orchestras
+
+Two agent systems are available for specialized workflows. Each system's full rules are injected automatically by `applyTo` hooks in `.github/instructions/`.
+
+### Publishing Orchestra
+
+A two-agent system for generating static Quarto websites from analytics content.
+
+- **Interviewer** (`@publishing-interviewer`): Plans the site, produces `publishing-contract.prompt.md`.
+- **Writer** (`@publishing-writer`): Assembles `edited_content/`, renders `_site/`.
+- Design doc: `.github/publishing-orchestra-3.md`
+- Migration guide: `.github/migration.md`
+- Hook: `.github/instructions/publishing-rules.instructions.md` (`applyTo: _frontend-*/**`)
+
+### Composing Orchestra
+
+A single-agent system for bootstrapping and developing analytical reports in `analysis/`.
+
+- **Report Composer** (`@report-composer`): Scaffolds directories, conducts adaptive interviews, iteratively develops `.R` + `.qmd` reports with a per-report Data Context section.
+- **Data Primer** (`analysis/data-primer-1/`): Centralized, human-verified data reference composed once via `@report-composer`. All EDAs and Reports link to it.
+- Design doc: `.github/composing-orchestra-1.md`
+- Bootstrap prompt: `.github/prompts/composing-new.prompt.md`
+- Hook: `.github/instructions/report-composition.instructions.md` (`applyTo: analysis/**`)
+- Templates: `.github/templates/composing-*.{R,qmd,md}` + `data-primer-template.qmd`
+
 ## File Structure
 
 ```
