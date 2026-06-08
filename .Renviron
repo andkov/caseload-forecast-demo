@@ -1,4 +1,0 @@
-# Reduce renv startup overhead at the environment level.
-# Suppresses the "Using renv X.Y.Z" banner and similar startup messages
-# that add initialization time when languageserver spawns a callr subprocess.
-RENV_CONFIG_STARTUP_QUIET=TRUE
